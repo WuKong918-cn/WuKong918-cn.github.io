@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.wukong918.cn/"/>
-  <updated>2021-05-02T14:56:44.953Z</updated>
+  <updated>2021-05-02T15:17:09.006Z</updated>
   <id>https://www.wukong918.cn/</id>
   
   <author>
@@ -17,34 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Netty大纲</title>
-    <link href="https://www.wukong918.cn/Netty%E5%A4%A7%E7%BA%B2.html"/>
-    <id>https://www.wukong918.cn/Netty%E5%A4%A7%E7%BA%B2.html</id>
-    <published>2022-04-19T16:00:00.000Z</published>
-    <updated>2021-05-02T14:56:44.953Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;Netty是一个提供异步事件驱动的网络应用框架，是一个用以快速开发高性能、可扩展协议的服务器和客户端的工具。换句话说，Netty 是一个 NIO 客户端服务器框架，使用它可以快速简单地开发网络应用程序，比如服务器和客户端的协议。Netty 大大简化了网络编程，比如 TCP 和 UDP 的 socket 服务的开发。&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="Netty" scheme="https://www.wukong918.cn/categories/Netty/"/>
-    
-    
-      <category term="Netty" scheme="https://www.wukong918.cn/tags/Netty/"/>
-    
-      <category term="Java" scheme="https://www.wukong918.cn/tags/Java/"/>
-    
-  </entry>
-  
-  <entry>
     <title>BIO、NIO、AIO对比分析</title>
     <link href="https://www.wukong918.cn/BIO%E3%80%81NIO%E3%80%81AIO%E5%88%86%E6%9E%90.html"/>
     <id>https://www.wukong918.cn/BIO%E3%80%81NIO%E3%80%81AIO%E5%88%86%E6%9E%90.html</id>
-    <published>2021-05-01T16:00:00.000Z</published>
-    <updated>2021-05-02T14:52:19.236Z</updated>
+    <published>2022-05-01T16:00:00.000Z</published>
+    <updated>2021-05-02T15:17:09.006Z</updated>
     
     <summary type="html">
     
@@ -78,6 +55,29 @@
       <category term="NIO" scheme="https://www.wukong918.cn/tags/NIO/"/>
     
       <category term="AIO" scheme="https://www.wukong918.cn/tags/AIO/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Netty大纲</title>
+    <link href="https://www.wukong918.cn/Netty%E5%A4%A7%E7%BA%B2.html"/>
+    <id>https://www.wukong918.cn/Netty%E5%A4%A7%E7%BA%B2.html</id>
+    <published>2022-04-19T16:00:00.000Z</published>
+    <updated>2021-05-02T14:56:44.953Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;Netty是一个提供异步事件驱动的网络应用框架，是一个用以快速开发高性能、可扩展协议的服务器和客户端的工具。换句话说，Netty 是一个 NIO 客户端服务器框架，使用它可以快速简单地开发网络应用程序，比如服务器和客户端的协议。Netty 大大简化了网络编程，比如 TCP 和 UDP 的 socket 服务的开发。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Netty" scheme="https://www.wukong918.cn/categories/Netty/"/>
+    
+    
+      <category term="Netty" scheme="https://www.wukong918.cn/tags/Netty/"/>
+    
+      <category term="Java" scheme="https://www.wukong918.cn/tags/Java/"/>
     
   </entry>
   

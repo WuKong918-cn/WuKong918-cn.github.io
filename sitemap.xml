@@ -2,14 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://www.wukong918.cn/Netty%E5%A4%A7%E7%BA%B2.html</loc>
+    <loc>https://www.wukong918.cn/BIO%E3%80%81NIO%E3%80%81AIO%E5%88%86%E6%9E%90.html</loc>
     
     <lastmod>2021-05-02</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wukong918.cn/BIO%E3%80%81NIO%E3%80%81AIO%E5%88%86%E6%9E%90.html</loc>
+    <loc>https://www.wukong918.cn/Netty%E5%A4%A7%E7%BA%B2.html</loc>
     
     <lastmod>2021-05-02</lastmod>
     
@@ -23,14 +23,14 @@
   </url>
   
   <url>
-    <loc>https://www.wukong918.cn/archives/index.html</loc>
+    <loc>https://www.wukong918.cn/about/index.html</loc>
     
     <lastmod>2020-11-23</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wukong918.cn/about/index.html</loc>
+    <loc>https://www.wukong918.cn/archives/index.html</loc>
     
     <lastmod>2020-11-23</lastmod>
     
@@ -249,6 +249,27 @@
 
   
   <url>
+    <loc>https://www.wukong918.cn/tags/Mysql/</loc>
+    <lastmod>2021-05-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wukong918.cn/tags/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</loc>
+    <lastmod>2021-05-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wukong918.cn/tags/%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E6%80%A7/</loc>
+    <lastmod>2021-05-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.wukong918.cn/tags/Netty/</loc>
     <lastmod>2021-05-02</lastmod>
     <changefreq>daily</changefreq>
@@ -271,27 +292,6 @@
   
   <url>
     <loc>https://www.wukong918.cn/tags/AIO/</loc>
-    <lastmod>2021-05-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wukong918.cn/tags/Mysql/</loc>
-    <lastmod>2021-05-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wukong918.cn/tags/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</loc>
-    <lastmod>2021-05-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wukong918.cn/tags/%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E6%80%A7/</loc>
     <lastmod>2021-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -327,13 +327,6 @@
   
   <url>
     <loc>https://www.wukong918.cn/tags/Next/</loc>
-    <lastmod>2021-05-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.wukong918.cn/tags/MVCC/</loc>
     <lastmod>2021-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -389,7 +382,7 @@
   </url>
   
   <url>
-    <loc>https://www.wukong918.cn/tags/%E7%B4%A2%E5%BC%95/</loc>
+    <loc>https://www.wukong918.cn/tags/MVCC/</loc>
     <lastmod>2021-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -397,6 +390,13 @@
   
   <url>
     <loc>https://www.wukong918.cn/tags/OSS/</loc>
+    <lastmod>2021-05-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.wukong918.cn/tags/%E7%B4%A2%E5%BC%95/</loc>
     <lastmod>2021-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -431,6 +431,13 @@
   </url>
   
   <url>
+    <loc>https://www.wukong918.cn/tags/ClassLoader/</loc>
+    <lastmod>2021-05-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.wukong918.cn/tags/HashMap/</loc>
     <lastmod>2021-05-02</lastmod>
     <changefreq>daily</changefreq>
@@ -444,24 +451,17 @@
     <priority>0.6</priority>
   </url>
   
-  <url>
-    <loc>https://www.wukong918.cn/tags/ClassLoader/</loc>
-    <lastmod>2021-05-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
 
   
   <url>
-    <loc>https://www.wukong918.cn/categories/Netty/</loc>
+    <loc>https://www.wukong918.cn/categories/Mysql/</loc>
     <lastmod>2021-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://www.wukong918.cn/categories/Mysql/</loc>
+    <loc>https://www.wukong918.cn/categories/Netty/</loc>
     <lastmod>2021-05-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
