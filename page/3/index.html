@@ -25,7 +25,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"www.wukong918.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"www.wukong918.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="学得越多会得越少">
@@ -118,8 +118,9 @@
 
 
 
-
 <nav class="site-nav">
+<!-- 音乐播放器 在https://music.163.com 上挑选-->
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=478507889&auto=1&height=66"></iframe>
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
@@ -197,7 +198,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/%E7%9B%B4%E5%87%BBHashMap%E6%BA%90%E7%A0%81.html">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/java/%E7%9B%B4%E5%87%BBHashMap%E6%BA%90%E7%A0%81.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
@@ -211,7 +212,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E7%9B%B4%E5%87%BBHashMap%E6%BA%90%E7%A0%81.html" class="post-title-link" itemprop="url">直击HashMap源码</a>
+            <a href="/java/%E7%9B%B4%E5%87%BBHashMap%E6%BA%90%E7%A0%81.html" class="post-title-link" itemprop="url">直击HashMap源码</a>
         </h2>
 
         <div class="post-meta">
@@ -263,7 +264,7 @@
 <p>今天我就来跟着HashMap源码来分析HashMap是如何实现存储，扩容，以及性能优化的。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E7%9B%B4%E5%87%BBHashMap%E6%BA%90%E7%A0%81.html#more" rel="contents">
+              <a class="btn" href="/java/%E7%9B%B4%E5%87%BBHashMap%E6%BA%90%E7%A0%81.html#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -290,7 +291,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/JVM%E4%B8%8EJAVA%E4%BD%93%E7%B3%BB.html">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/java/JVM%E4%B8%8EJAVA%E4%BD%93%E7%B3%BB.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
@@ -304,7 +305,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/JVM%E4%B8%8EJAVA%E4%BD%93%E7%B3%BB.html" class="post-title-link" itemprop="url">JVM与JAVA体系</a>
+            <a href="/java/JVM%E4%B8%8EJAVA%E4%BD%93%E7%B3%BB.html" class="post-title-link" itemprop="url">JVM与JAVA体系</a>
         </h2>
 
         <div class="post-meta">
@@ -364,7 +365,7 @@
 <li>jdk11出现ZGC性能特别高<br>4 . 2019年 redhat公司发布 shenandoah GC
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/JVM%E4%B8%8EJAVA%E4%BD%93%E7%B3%BB.html#more" rel="contents">
+              <a class="btn" href="/java/JVM%E4%B8%8EJAVA%E4%BD%93%E7%B3%BB.html#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -391,7 +392,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F.html">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/java/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
@@ -405,7 +406,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F.html" class="post-title-link" itemprop="url">类加载子系统</a>
+            <a href="/java/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F.html" class="post-title-link" itemprop="url">类加载子系统</a>
         </h2>
 
         <div class="post-meta">
@@ -471,7 +472,7 @@
 <li>无论类加载器的类型如何划分，在程序中我们最常见的引导类类加载器始终只有3个
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F.html#more" rel="contents">
+              <a class="btn" href="/java/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F.html#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -498,7 +499,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/other/OSS%E9%98%B2%E7%9B%97%E9%93%BE.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
@@ -512,7 +513,108 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html" class="post-title-link" itemprop="url">CDN防盗链与有效使用CDN缓存</a>
+            <a href="/other/OSS%E9%98%B2%E7%9B%97%E9%93%BE.html" class="post-title-link" itemprop="url">OSS防盗链</a>
+        </h2>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-27 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-27T00:00:00+08:00">2020-04-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%98%BF%E9%87%8C%E4%BA%91/" itemprop="url" rel="index"><span itemprop="name">阿里云</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>742</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><p>在我们搭建自己的阿里云OSS时，里面存储了许多我们运用的静态文件（图片、js、css）等。</p>
+<h2 id="案例："><a href="#案例：" class="headerlink" title="案例："></a>案例：</h2><p>假设我们的网站为A 里面有了OSS的链接</p>
+<p>此时用户B看到我们的网站里的OSS链接并盗用了我这个链接，发布在他们自己的网站上。</p>
+<p>此时用户看到用户B的图片的流程图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">	用户 --&gt; 站点B --&gt; OSS链接</span><br></pre></td></tr></table></figure>
+
+<p>可以看见用户并不知道这个OSS链接是属于我的，此时站点B就是在盗用我的OSS链接，并且没有给我带来流量。使用 阿里云OSS是存在外网下行流量费用和请求费用的。</p>
+<p>站点B这样的行为我称之为”白嫖“。</p>
+<p>如果我们只是站在在道德层面上去指责别人，并不采取措施，我们的钱包里的钱就是为他人来带便利和流量。</p>
+<p>所以我们需要<font color="red">OSS防盗链</font></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/other/OSS%E9%98%B2%E7%9B%97%E9%93%BE.html#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    <!-- 文章结束表示语-->
+    <!-- 如果不是摘录 -->
+
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/other/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+      <meta itemprop="name" content="悟空">
+      <meta itemprop="description" content="学得越多会得越少">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="悟空的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/other/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html" class="post-title-link" itemprop="url">CDN防盗链与有效使用CDN缓存</a>
         </h2>
 
         <div class="post-meta">
@@ -573,7 +675,7 @@
 <p>所以我们需要<font color="red">CDN防盗链</font></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html#more" rel="contents">
+              <a class="btn" href="/other/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -600,7 +702,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/OSS%E9%98%B2%E7%9B%97%E9%93%BE.html">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
@@ -614,108 +716,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/OSS%E9%98%B2%E7%9B%97%E9%93%BE.html" class="post-title-link" itemprop="url">OSS防盗链</a>
-        </h2>
-
-        <div class="post-meta">
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-27 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-27T00:00:00+08:00">2020-04-27</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%98%BF%E9%87%8C%E4%BA%91/" itemprop="url" rel="index"><span itemprop="name">阿里云</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>742</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><p>在我们搭建自己的阿里云OSS时，里面存储了许多我们运用的静态文件（图片、js、css）等。</p>
-<h2 id="案例："><a href="#案例：" class="headerlink" title="案例："></a>案例：</h2><p>假设我们的网站为A 里面有了OSS的链接</p>
-<p>此时用户B看到我们的网站里的OSS链接并盗用了我这个链接，发布在他们自己的网站上。</p>
-<p>此时用户看到用户B的图片的流程图</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">	用户 --&gt; 站点B --&gt; OSS链接</span><br></pre></td></tr></table></figure>
-
-<p>可以看见用户并不知道这个OSS链接是属于我的，此时站点B就是在盗用我的OSS链接，并且没有给我带来流量。使用 阿里云OSS是存在外网下行流量费用和请求费用的。</p>
-<p>站点B这样的行为我称之为”白嫖“。</p>
-<p>如果我们只是站在在道德层面上去指责别人，并不采取措施，我们的钱包里的钱就是为他人来带便利和流量。</p>
-<p>所以我们需要<font color="red">OSS防盗链</font></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/OSS%E9%98%B2%E7%9B%97%E9%93%BE.html#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    <!-- 文章结束表示语-->
-    <!-- 如果不是摘录 -->
-
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
-      <meta itemprop="name" content="悟空">
-      <meta itemprop="description" content="学得越多会得越少">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="悟空的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html" class="post-title-link" itemprop="url">运用浏览器缓存减少CDN请求</a>
+            <a href="/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html" class="post-title-link" itemprop="url">运用浏览器缓存减少CDN请求</a>
         </h2>
 
         <div class="post-meta">
@@ -767,7 +768,7 @@
 <p>该如何去解决呢？</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html#more" rel="contents">
+              <a class="btn" href="/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -949,26 +950,6 @@
   </div>
 
         
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-</div>
 
 
 
@@ -983,9 +964,10 @@
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
   <script src="\lib\fancybox\source\jquery.min.js"></script>
   <script src="\lib\fancybox\source\jquery.fancybox.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/lazyload/lozad.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -999,11 +981,70 @@
 
 <script src="/js/next-boot.js"></script>
 
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
 
 
 
   
-  <script>
+  <script data-pjax>
     (function(){
       var bp = document.createElement('script');
       var curProtocol = window.location.protocol.split(':')[0];
@@ -1031,11 +1072,13 @@
 
 
 
+    <div id="pjax">
   
 
   
 
 
+    </div>
   <!-- 动态背景-->
   
 </body>

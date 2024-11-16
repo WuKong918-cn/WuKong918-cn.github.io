@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/Java_256px.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Java_32px.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Java_16px.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="true">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="\lib\font-awesome\css\font-awesome.css">
+  <link rel="stylesheet" href="\lib\fancybox\source\jquery.fancybox.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-flash.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+
+
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.wukong918.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="JVM整体结构 字节码的作用是什么？为什么需要字节码？  字节码是通用的，在不同的平台上的JVM均能运行 增加字节码的概念后，产生了更多简便好用的高级语言例如Groovy，Scala，Kotlin，JRuby，如果Java是解释性语言（无字节码解耦）那么将不会有这么多的扩展。 Java语言更加高级，如果不编译成为字节码，直接使用代码交给解释器去翻译成为机器指令效率较低，这种模式和Python类似。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="效率学会JVM">
+<meta property="og:url" content="https://www.wukong918.cn/jvm/%E6%95%88%E7%8E%87%E5%AD%A6%E4%BC%9AJVM.html">
+<meta property="og:site_name" content="悟空的博客">
+<meta property="og:description" content="JVM整体结构 字节码的作用是什么？为什么需要字节码？  字节码是通用的，在不同的平台上的JVM均能运行 增加字节码的概念后，产生了更多简便好用的高级语言例如Groovy，Scala，Kotlin，JRuby，如果Java是解释性语言（无字节码解耦）那么将不会有这么多的扩展。 Java语言更加高级，如果不编译成为字节码，直接使用代码交给解释器去翻译成为机器指令效率较低，这种模式和Python类似。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20241116180032.png">
+<meta property="og:image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20241116180429.png">
+<meta property="article:published_time" content="2024-11-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-16T13:15:22.307Z">
+<meta property="article:author" content="悟空">
+<meta property="article:tag" content="JVM">
+<meta property="article:tag" content="效率">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20241116180032.png">
+
+<link rel="canonical" href="https://www.wukong918.cn/jvm/%E6%95%88%E7%8E%87%E5%AD%A6%E4%BC%9AJVM.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>效率学会JVM | 悟空的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="悟空的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">悟空的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中遇到的，学习到的一些开发技巧</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+<!-- 音乐播放器 在https://music.163.com 上挑选-->
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=478507889&auto=1&height=66"></iframe>
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>联系我</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/jvm/%E6%95%88%E7%8E%87%E5%AD%A6%E4%BC%9AJVM.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+      <meta itemprop="name" content="悟空">
+      <meta itemprop="description" content="学得越多会得越少">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="悟空的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          效率学会JVM
+        </h1>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-11-16 00:00:00" itemprop="dateCreated datePublished" datetime="2024-11-16T00:00:00+08:00">2024-11-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>312</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="JVM整体结构"><a href="#JVM整体结构" class="headerlink" title="JVM整体结构"></a>JVM整体结构</h1><p><img data-src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20241116180032.png" alt="20241116180032"></p>
+<h2 id="字节码的作用是什么？为什么需要字节码？"><a href="#字节码的作用是什么？为什么需要字节码？" class="headerlink" title="字节码的作用是什么？为什么需要字节码？"></a>字节码的作用是什么？为什么需要字节码？</h2><p><img data-src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20241116180429.png" alt="20241116180429"></p>
+<ol>
+<li>字节码是通用的，在不同的平台上的JVM均能运行</li>
+<li>增加字节码的概念后，产生了更多简便好用的高级语言例如<code>Groovy</code>，<code>Scala</code>，<code>Kotlin</code>，<code>JRuby</code>，如果Java是解释性语言（无字节码解耦）那么将不会有这么多的扩展。</li>
+<li>Java语言更加高级，如果不编译成为字节码，直接使用代码交给解释器去翻译成为机器指令效率较低，这种模式和Python类似。如果编译成为字节码之后，JVM去解释为机器指令效率会比较高，将性能通过提前编译的形式来提高运行时的效率。</li>
+</ol>
+<h1 id="放在最后"><a href="#放在最后" class="headerlink" title="放在最后"></a>放在最后</h1><p>本文根据学习B站<a href="https://www.bilibili.com/video/BV1he4y1e7nW?spm_id_from=333.788.player.switch&vd_source=b4dd1b2b51d9d2f835b3eacde5ee0956&p=3" target="_blank" rel="noopener"><font color="0099ff">【JVM极简教程】2小时快速学会JVM，史上用时最短，效率最高！</font></a>整理笔记，有需要的同学可以前去系统的学习。</p>
+
+    </div>
+    <!-- 文章结束表示语-->
+    <!-- 如果不是摘录 -->
+      
+        <div>
+            <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">如果文章有问题可以在评论区留言，博客使用Gitalk实现的评论系统，登录后评论我的回复您将会收到Github的邮件提示<br/>当然也可以扫我的微信二维码添加我为好友和我一起沟通在开发中的问题，微信二维码在"菜单栏-联系我"中。<br/>希望大家一起，共同学习，共同成长。</div>
+    
+</div>
+
+        </div>
+      
+
+
+    
+    
+    
+        <div class="reward-container">
+  <div><font color="red">您的支持将鼓励我继续创作！</font></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    赞赏支持
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200422204000194.png" alt="悟空 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200422204017953.png" alt="悟空 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+              <a href="/tags/%E6%95%88%E7%8E%87%E5%AD%A6%E4%BC%9AJVM/" rel="tag"># 效率学会JVM</a>
+          </div>
+          <!-- bsShare分享-->
+          <!-- 
+          <br/>
+          <div class="bshare-custom icon-medium"><a title="分享到QQ好友" class="bshare-qqim"></a><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到微信" class="bshare-weixin"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/button.js#style=-1&amp;uuid=b92f7440-610c-4617-935f-53bc28fe72cb&amp;pophcol=2&amp;lang=zh"></script><a class="bshareDiv" onclick="javascript:return false;"></a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+          -->
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM整体结构"><span class="nav-number">1.</span> <span class="nav-text">JVM整体结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#字节码的作用是什么？为什么需要字节码？"><span class="nav-number">1.1.</span> <span class="nav-text">字节码的作用是什么？为什么需要字节码？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#放在最后"><span class="nav-number">2.</span> <span class="nav-text">放在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="悟空"
+      src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+  <p class="site-author-name" itemprop="name">悟空</p>
+  <div class="site-description" itemprop="description">学得越多会得越少</div>
+  <span class="site-location" itemprop="location"><i class="fa fa-map-marker"></i>&nbsp;重庆 · 九龙坡</span>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=296954345" title="QQ → tencent:&#x2F;&#x2F;AddContact&#x2F;?fromId&#x3D;50&amp;fromSubId&#x3D;1&amp;subcmd&#x3D;all&amp;uin&#x3D;296954345" rel="noopener" target="_blank"><i class="fa fa-qq fa-fw"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:296954345@qq.com" title="E-Mail → mailto:296954345@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/EdisonChenWuKong_admin" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;EdisonChenWuKong_admin" rel="noopener" target="_blank"><i class="fa fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/306267096" title="bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;306267096" rel="noopener" target="_blank"><i class="fa fa-youtube-play fa-fw"></i>bilibili</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <!-- 注释原有桃心
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  -->
+  <span class="author" itemprop="copyrightHolder">悟空</span>
+
+
+    <span style="padding-left:25px;background:url(/images/beian.png) no-repeat left center" rel="nofollow" />
+    <!-- 备案号 --><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">渝ICP备20003439号-1 </a>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">88k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:20</span>
+</div>
+
+<!-- 个人增值信息 -->
+  <div class="theme-info">
+  如果你的能力已经跟不上你的野心，那么就静下心来学习 --学无止境
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="\lib\fancybox\source\jquery.min.js"></script>
+  <script src="\lib\fancybox\source\jquery.fancybox.min.js"></script>
+  <script src="/lib/lazyload/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+  <script data-pjax>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '504f849365841e0546ad',
+      clientSecret: 'adc04143494fdb979267ebbd509543fc877f3a54',
+      repo        : 'WuKong918-cn.github.io',
+      owner       : 'WuKong918-cn',
+      admin       : ['WuKong918-cn'],
+      id          : '9cb36db2f77f4c7d839c198ad219dbeb',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  <!-- 动态背景-->
+  
+</body>
+</html>

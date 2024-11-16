@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/Java_256px.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Java_32px.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Java_16px.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="true">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="\lib\font-awesome\css\font-awesome.css">
+  <link rel="stylesheet" href="\lib\fancybox\source\jquery.fancybox.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-flash.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+
+
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.wukong918.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="CDN将静态文件存储在浏览器应用场景当我们配置好自己的CDN缓存后，我们还会发现每次都会发起请求CDN，这样对于“勤俭节约”的我来说是十分浪费，且用户也会感觉页面加载速度会稍微有丢丢慢。 该如何去解决呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="运用浏览器缓存减少CDN请求">
+<meta property="og:url" content="https://www.wukong918.cn/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html">
+<meta property="og:site_name" content="悟空的博客">
+<meta property="og:description" content="CDN将静态文件存储在浏览器应用场景当我们配置好自己的CDN缓存后，我们还会发现每次都会发起请求CDN，这样对于“勤俭节约”的我来说是十分浪费，且用户也会感觉页面加载速度会稍微有丢丢慢。 该如何去解决呢？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200424223217262.png">
+<meta property="og:image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200424223620036.png">
+<meta property="article:published_time" content="2020-04-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-16T06:16:52.063Z">
+<meta property="article:author" content="悟空">
+<meta property="article:tag" content="CDN加速">
+<meta property="article:tag" content="CDN缓存">
+<meta property="article:tag" content="阿里云CDN">
+<meta property="article:tag" content="静态文件浏览器缓存">
+<meta property="article:tag" content="浏览器缓存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200424223217262.png">
+
+<link rel="canonical" href="https://www.wukong918.cn/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>运用浏览器缓存减少CDN请求 | 悟空的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="悟空的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">悟空的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中遇到的，学习到的一些开发技巧</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+<!-- 音乐播放器 在https://music.163.com 上挑选-->
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=478507889&auto=1&height=66"></iframe>
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>联系我</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+      <meta itemprop="name" content="悟空">
+      <meta itemprop="description" content="学得越多会得越少">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="悟空的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          运用浏览器缓存减少CDN请求
+        </h1>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-27 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-27T00:00:00+08:00">2020-04-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%98%BF%E9%87%8C%E4%BA%91/" itemprop="url" rel="index"><span itemprop="name">阿里云</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="CDN将静态文件存储在浏览器"><a href="#CDN将静态文件存储在浏览器" class="headerlink" title="CDN将静态文件存储在浏览器"></a>CDN将静态文件存储在浏览器</h1><h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>当我们配置好自己的CDN缓存后，我们还会发现每次都会发起请求CDN，这样对于“勤俭节约”的我来说是十分浪费，且用户也会感觉页面加载速度会稍微有丢丢慢。</p>
+<p>该如何去解决呢？</p>
+<a id="more"></a>
+
+<h2 id="使用浏览器缓存"><a href="#使用浏览器缓存" class="headerlink" title="使用浏览器缓存"></a>使用浏览器缓存</h2><p>这里相信许多大佬应该知道http header中的cache-control和expires</p>
+<hr>
+<h3 id="cache-control"><a href="#cache-control" class="headerlink" title="cache-control"></a>cache-control</h3><p>这东西简单的说就是告诉浏览器，这个静态文件是需要缓存的，缓存的时间我会告诉你</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cache-control: public, max-age=86400</span><br></pre></td></tr></table></figure>
+
+<p>以上这个配置呢，就是说浏览器能保存这个文件缓存时间为86400秒，就是1天。</p>
+<p>具体的参数</p>
+<p><code>Public</code> 指示响应可被任何缓存区缓存。<br><code>Private</code> 指示对于单个用户的整个或部分响应消息，不能被共享缓存处理。这允许服务器仅仅描述当用户的<br>部分响应消息，此响应消息对于其他用户的请求无效。<br><code>no-cache</code> 指示请求或响应消息不能缓存（HTTP/1.0用Pragma的no-cache替换）<br>根据什么能被缓存<br><code>no-store</code> 用于防止重要的信息被无意的发布。在请求消息中发送将使得请求和响应消息都不使用缓存。<br>根据缓存超时<br><code>max-age</code> 指示客户机可以接收生存期不大于指定时间（以秒为单位）的响应。<br><code>min-fresh</code> 指示客户机可以接收响应时间小于当前时间加上指定时间的响应。<br><code>max-stale</code> 指示客户机可以接收超出超时期间的响应消息。如果指定max-stale消息的值，那么客户机可以接收超出超时期指定值之内的响应消息。我也不太懂这什么意思。一般也没用。</p>
+<h4 id="使用的弊端"><a href="#使用的弊端" class="headerlink" title="使用的弊端"></a>使用的弊端</h4><p>这么使用也是有弊端的，你不能把用户当成什么都会的人，你就把用户当成傻白甜，然后她请求获取到静态文件缓存后，此时我更新了这些静态文件可咋办，用户端的静态文件缓存也不会即时更新，这种一般就是在静态文件后面加个版本号，这种解决方式也挺多的，啥在js文件名后加个日期啥的。大家可以自己研究研究，我有时间也会在这上面去捣鼓一下=。=</p>
+<hr>
+<h3 id="expires"><a href="#expires" class="headerlink" title="expires"></a>expires</h3><p>静态文件缓存的失效时间</p>
+<p>数据包中的格式：<br><code>Expires = &quot;Expires&quot; &quot;:&quot; HTTP-date</code><br>例如<br><code>Expires: Thu, 01 Dec 1994 16:00:00 GMT</code> （必须是GMT格式）</p>
+<hr>
+<h3 id="阿里云CDN配置HTTP头"><a href="#阿里云CDN配置HTTP头" class="headerlink" title="阿里云CDN配置HTTP头"></a>阿里云CDN配置HTTP头</h3><p>当我们使用CDN时，我们的域名通过CNAME转发到CDN服务器上，CDN服务器再请求我们的资源，我这里不管怎么在我的nginx服务器上配expires和cache-control都没法加到最后页面上的请求头中（大佬们要是加出来了，别打我，我也是大半夜捣鼓这玩意儿有点懵逼了，我还没去排查是不是CDN缓存的原因造成的。）</p>
+<p>这里阿里云的CDN，Tengine服务器就提供了HTTP头的配置</p>
+<p>域名管理 –&gt; 要配置的域名 –&gt; 管理 –&gt; 缓存配置 –&gt; HTTP头 –&gt; 点击添加</p>
+<p><img data-src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200424223217262.png" alt="image-20200424223217262"></p>
+<p>这里阿里云提供了10种HTTP头</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">描述</th>
+<th align="left">示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Content-Type</td>
+<td align="left">指定客户端程序响应对象的内容类型。</td>
+<td align="left">image</td>
+</tr>
+<tr>
+<td align="left">Cache-Control</td>
+<td align="left">指定客户端程序请求和响应遵循的缓存机制。</td>
+<td align="left">no-cache</td>
+</tr>
+<tr>
+<td align="left">Content-Disposition</td>
+<td align="left">指定客户端程序把请求所得的内容存为一个文件时提供的默认的文件名。</td>
+<td align="left">123.txt</td>
+</tr>
+<tr>
+<td align="left">Content-Language</td>
+<td align="left">指定客户端程序响应对象的语言。</td>
+<td align="left">zh-CN</td>
+</tr>
+<tr>
+<td align="left">Expires</td>
+<td align="left">指定客户端程序响应对象的过期时间。</td>
+<td align="left">Wed, 21 Oct 2015 07:28:00 GMT</td>
+</tr>
+<tr>
+<td align="left">Access-Control-Allow-Origin</td>
+<td align="left">指定允许的跨域请求的来源。</td>
+<td align="left"><strong>*说明</strong> 您可以填写<code>*</code>表示全部域名；也可以填写完整域名，例如<code>www.aliyun.com</code>。</td>
+</tr>
+<tr>
+<td align="left">Access-Control-Allow-Headers</td>
+<td align="left">指定允许的跨域请求的字段。</td>
+<td align="left">X-Custom-Header</td>
+</tr>
+<tr>
+<td align="left">Access-Control-Allow-Methods</td>
+<td align="left">指定允许的跨域请求方法。</td>
+<td align="left">POST、GET</td>
+</tr>
+<tr>
+<td align="left">Access-Control-Max-Age</td>
+<td align="left">指定客户端程序对特定资源的预取请求返回结果的缓存时间。</td>
+<td align="left">600</td>
+</tr>
+<tr>
+<td align="left">Access-Control-Expose-Headers</td>
+<td align="left">指定允许访问的自定义头信息。</td>
+<td align="left">Content-Length</td>
+</tr>
+</tbody></table>
+<p><font color="red">注意！！！如果配置了CDN缓存，此时你迫不及待的去刷新页面，如果没看到你配置的响应头，需要你去刷新下CDN缓存目录</font></p>
+<p><img data-src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200424223620036.png" alt="image-20200424223620036"></p>
+<p><font color="red">这里填入你完整的域名提交刷新下</font></p>
+<p>此处要注意是因为，我第一次刷新的时候没有出现，但是我没反复校验是不是因为HTTP头配置还没生效，我配置完成后很快就跑去刷新了，然后我条件反射就直接去刷新CDN缓存了。</p>
+<p>如果配置成功，一直刷新不出响应头，我大胆的猜测是因为CDN服务器判断到有缓存，没有从我们的服务器拉取资源，直接把缓存中存储好包含HTTP头的资源返回了。</p>
+<hr>
+<h1 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h1><p>大半夜学习，有点懵逼，有空的时候我还是要再去深入理解下这块的原理。比如HTTP头，对于我这样的菜鸟Java程序员来说还算是盲区。此处记录也希望能帮助更多的人，不管在工作中，还是在自我鞭策学习中，少走弯路。</p>
+
+    </div>
+    <!-- 文章结束表示语-->
+    <!-- 如果不是摘录 -->
+      
+        <div>
+            <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">如果文章有问题可以在评论区留言，博客使用Gitalk实现的评论系统，登录后评论我的回复您将会收到Github的邮件提示<br/>当然也可以扫我的微信二维码添加我为好友和我一起沟通在开发中的问题，微信二维码在"菜单栏-联系我"中。<br/>希望大家一起，共同学习，共同成长。</div>
+    
+</div>
+
+        </div>
+      
+
+
+    
+    
+    
+        <div class="reward-container">
+  <div><font color="red">您的支持将鼓励我继续创作！</font></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    赞赏支持
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200422204000194.png" alt="悟空 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200422204017953.png" alt="悟空 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" rel="tag"># 阿里云</a>
+              <a href="/tags/CDN/" rel="tag"># CDN</a>
+          </div>
+          <!-- bsShare分享-->
+          <!-- 
+          <br/>
+          <div class="bshare-custom icon-medium"><a title="分享到QQ好友" class="bshare-qqim"></a><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到微信" class="bshare-weixin"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/button.js#style=-1&amp;uuid=b92f7440-610c-4617-935f-53bc28fe72cb&amp;pophcol=2&amp;lang=zh"></script><a class="bshareDiv" onclick="javascript:return false;"></a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+          -->
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/hexo/Hexo%E7%9A%84Next%E4%B8%BB%E9%A2%98%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E5%8A%A8%E6%80%81%E8%83%8C%E6%99%AF.html" rel="prev" title="Hexo的Next主题如何添加动态背景">
+      <i class="fa fa-chevron-left"></i> Hexo的Next主题如何添加动态背景
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/other/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html" rel="next" title="CDN防盗链与有效使用CDN缓存">
+      CDN防盗链与有效使用CDN缓存 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CDN将静态文件存储在浏览器"><span class="nav-number">1.</span> <span class="nav-text">CDN将静态文件存储在浏览器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#应用场景"><span class="nav-number">1.1.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用浏览器缓存"><span class="nav-number">1.2.</span> <span class="nav-text">使用浏览器缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cache-control"><span class="nav-number">1.2.1.</span> <span class="nav-text">cache-control</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用的弊端"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">使用的弊端</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#expires"><span class="nav-number">1.2.2.</span> <span class="nav-text">expires</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#阿里云CDN配置HTTP头"><span class="nav-number">1.2.3.</span> <span class="nav-text">阿里云CDN配置HTTP头</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结束语"><span class="nav-number">2.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="悟空"
+      src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+  <p class="site-author-name" itemprop="name">悟空</p>
+  <div class="site-description" itemprop="description">学得越多会得越少</div>
+  <span class="site-location" itemprop="location"><i class="fa fa-map-marker"></i>&nbsp;重庆 · 九龙坡</span>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=296954345" title="QQ → tencent:&#x2F;&#x2F;AddContact&#x2F;?fromId&#x3D;50&amp;fromSubId&#x3D;1&amp;subcmd&#x3D;all&amp;uin&#x3D;296954345" rel="noopener" target="_blank"><i class="fa fa-qq fa-fw"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:296954345@qq.com" title="E-Mail → mailto:296954345@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/EdisonChenWuKong_admin" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;EdisonChenWuKong_admin" rel="noopener" target="_blank"><i class="fa fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/306267096" title="bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;306267096" rel="noopener" target="_blank"><i class="fa fa-youtube-play fa-fw"></i>bilibili</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <!-- 注释原有桃心
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  -->
+  <span class="author" itemprop="copyrightHolder">悟空</span>
+
+
+    <span style="padding-left:25px;background:url(/images/beian.png) no-repeat left center" rel="nofollow" />
+    <!-- 备案号 --><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">渝ICP备20003439号-1 </a>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">88k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:20</span>
+</div>
+
+<!-- 个人增值信息 -->
+  <div class="theme-info">
+  如果你的能力已经跟不上你的野心，那么就静下心来学习 --学无止境
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="\lib\fancybox\source\jquery.min.js"></script>
+  <script src="\lib\fancybox\source\jquery.fancybox.min.js"></script>
+  <script src="/lib/lazyload/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+  <script data-pjax>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '504f849365841e0546ad',
+      clientSecret: 'adc04143494fdb979267ebbd509543fc877f3a54',
+      repo        : 'WuKong918-cn.github.io',
+      owner       : 'WuKong918-cn',
+      admin       : ['WuKong918-cn'],
+      id          : 'b96234d938de4b6e357cb2fe55f3e527',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  <!-- 动态背景-->
+  
+</body>
+</html>

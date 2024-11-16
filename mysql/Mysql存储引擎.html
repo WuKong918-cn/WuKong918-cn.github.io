@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/Java_256px.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Java_32px.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Java_16px.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="true">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="\lib\font-awesome\css\font-awesome.css">
+  <link rel="stylesheet" href="\lib\fancybox\source\jquery.fancybox.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-flash.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+
+
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.wukong918.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="存储引擎概述和大多数的数据库不同，MySQL中有一个存储引擎的概念，针对不同的存储需求可以选择最优的存储引擎。 存储引擎就是存储数据，建立索引，更新查询数据等等技术的实现方式。存储引擎是基于表的，而不是基于库的。所以存储引擎也可被称为表类型。 Oracle，SqlServer等数据库只有一种存储引擎。MySQL提供了插件式的存储引擎架构。所以MySQL存在多种存储引擎，可以根据需要使用相应的引擎，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql存储引擎">
+<meta property="og:url" content="https://www.wukong918.cn/mysql/Mysql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E.html">
+<meta property="og:site_name" content="悟空的博客">
+<meta property="og:description" content="存储引擎概述和大多数的数据库不同，MySQL中有一个存储引擎的概念，针对不同的存储需求可以选择最优的存储引擎。 存储引擎就是存储数据，建立索引，更新查询数据等等技术的实现方式。存储引擎是基于表的，而不是基于库的。所以存储引擎也可被称为表类型。 Oracle，SqlServer等数据库只有一种存储引擎。MySQL提供了插件式的存储引擎架构。所以MySQL存在多种存储引擎，可以根据需要使用相应的引擎，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-16T06:16:52.059Z">
+<meta property="article:author" content="悟空">
+<meta property="article:tag" content="存储引擎">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="InnoDB">
+<meta property="article:tag" content="MyISAM">
+<meta property="article:tag" content="Memory">
+<meta property="article:tag" content="Merge">
+<meta property="article:tag" content="InnoDB支持事务">
+<meta property="article:tag" content="MyISAM不支持事务">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.wukong918.cn/mysql/Mysql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Mysql存储引擎 | 悟空的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="悟空的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">悟空的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中遇到的，学习到的一些开发技巧</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+<!-- 音乐播放器 在https://music.163.com 上挑选-->
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=478507889&auto=1&height=66"></iframe>
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>联系我</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/mysql/Mysql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+      <meta itemprop="name" content="悟空">
+      <meta itemprop="description" content="学得越多会得越少">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="悟空的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mysql存储引擎
+        </h1>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-02 00:00:00" itemprop="dateCreated datePublished" datetime="2020-06-02T00:00:00+08:00">2020-06-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="存储引擎概述"><a href="#存储引擎概述" class="headerlink" title="存储引擎概述"></a>存储引擎概述</h1><p>和大多数的数据库不同，MySQL中有一个存储引擎的概念，针对不同的存储需求可以选择最优的存储引擎。</p>
+<p>存储引擎就是存储数据，建立索引，更新查询数据等等技术的实现方式。存储引擎是基于表的，而不是基于库的。所以存储引擎也可被称为表类型。</p>
+<p>Oracle，SqlServer等数据库只有一种存储引擎。MySQL提供了插件式的存储引擎架构。所以MySQL存在多种存储引擎，可以根据需要使用相应的引擎，或者编写存储引擎。</p>
+<a id="more"></a>
+
+<p>MySQL5.0支持的存储引擎包含：</p>
+<ul>
+<li>InnoDB</li>
+<li>MyISAM</li>
+<li>BDB</li>
+<li>MEMORY</li>
+<li>MERGE</li>
+<li>EXAMPLE</li>
+<li>NDB Cluster</li>
+<li>ARCHIVE</li>
+<li>CSV</li>
+<li>BLACKHOLE</li>
+<li>REDERATED</li>
+</ul>
+<p>其中InnoDB和BDB提供事务安全表，其他存储引擎都是非事务安全表。</p>
+<p>可以通过指定下面语句，来查询当前数据库支持的存储引擎。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">engines</span>;</span><br></pre></td></tr></table></figure>
+
+<p>查看默认引擎</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'%storage_engine%'</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="各种存储引擎特性"><a href="#各种存储引擎特性" class="headerlink" title="各种存储引擎特性"></a>各种存储引擎特性</h1><table>
+<thead>
+<tr>
+<th>特点</th>
+<th>InnoDB</th>
+<th>MyISAM</th>
+<th>MEMORY</th>
+<th>MERGE</th>
+<th>NDB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>存储限制</strong></td>
+<td>64TB</td>
+<td>有</td>
+<td>有</td>
+<td>没有</td>
+<td>有</td>
+</tr>
+<tr>
+<td><strong>事务安全</strong></td>
+<td><font color="red"><strong>支持</strong></font></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>锁机制</strong></td>
+<td><strong><font color="red">行锁（适合高并发）</font></strong></td>
+<td><font color="red"><strong>表锁</strong></font></td>
+<td>表锁</td>
+<td>表锁</td>
+<td>行锁</td>
+</tr>
+<tr>
+<td><strong>B树索引</strong></td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td><strong>哈希索引</strong></td>
+<td></td>
+<td></td>
+<td>支持</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>全文索引</strong></td>
+<td>支持（5.6版本之后）</td>
+<td>支持</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>集群索引</strong></td>
+<td>支持</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>数据索引</strong></td>
+<td>支持</td>
+<td></td>
+<td>支持</td>
+<td></td>
+<td>支持</td>
+</tr>
+<tr>
+<td><strong>索引缓存</strong></td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td><strong>数据可压缩</strong></td>
+<td></td>
+<td>支持</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>空间使用</strong></td>
+<td>高</td>
+<td>低</td>
+<td>N/A</td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>内存使用</strong></td>
+<td>高</td>
+<td>低</td>
+<td>中等</td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>批量插入速度</strong></td>
+<td>低</td>
+<td>高</td>
+<td>高</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td><strong>支持外键</strong></td>
+<td><font color="red"><strong>支持</strong></font></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>这里重点要掌握InnoDB/MyISAM，另外三种了解就行。</p>
+<p>其中不管什么引擎表存储在磁盘上的linux文件路径都为<code>/var/lib/mysql</code>路径下。该目录下根据数据库名分文件夹，进入文件夹后下方是根据表名存储的不同文件。</p>
+<p><font color="red">注意：在MySQL8开始删除了原来的frm文件，并采用 Serialized Dictionary Information (SDI), 是MySQL8.0重新设计数据词典后引入的新产物,并开始已经统一使用InnoDB存储引擎来存储表的元数据信息。SDI信息源记录保存在ibd文件中。<br>如何可以查看表结构信息，官方提供了一个工具叫做ibd2sdi，在安装目录下可以找到，可以离线的将ibd文件中的冗余存储的sdi信息提取出来，并以json的格式输出到终端。</font></p>
+<h2 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h2><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启事务</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="comment"># 提交事务</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"><span class="comment"># 回滚事务</span></span><br><span class="line"><span class="keyword">rollback</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="外键"><a href="#外键" class="headerlink" title="外键"></a>外键</h3><p>重点外键功能</p>
+<pre><code>- ON DELETE RESTRICT 当从表中有用到该外键的数据时，主表不能删除该对应的数据
+- ON UPDATE CASCADE 当主表修改了该外键某行该字段的值，从表关联的值也同时做修改</code></pre><h3 id="存储形式"><a href="#存储形式" class="headerlink" title="存储形式"></a>存储形式</h3><p>InnoDB存储表和索引有以下两种存储方式：</p>
+<ol>
+<li>使用共享表空间存储，这种方式创建的表的表结构保存在<code>表名.frm</code>文件中，数据和索引保存在<code>innodb_data_home_dir</code>和<code>innodb_data_file_path</code>定义的表空间中，可以时多个文件</li>
+<li>使用多表空间存储，这种方式创建的表结构仍然存储在<code>表名.frm</code>文件中，但是每个表的数据和索引单独保存在<code>表名.ibd</code>文件中</li>
+</ol>
+<h2 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h2><p>​    MyISAM不支持事务、也不支持外键，其优势是访问的速度快，对事务的完整性没有要求或以SELECT、INSERT为主的应用基本上都可以使用这个引擎来创建表。</p>
+<h3 id="不支持事务"><a href="#不支持事务" class="headerlink" title="不支持事务"></a>不支持事务</h3><p>不管如何<code>start transaction;commit;rollback;</code>都无法操作事务</p>
+<h3 id="文件存储方式"><a href="#文件存储方式" class="headerlink" title="文件存储方式"></a>文件存储方式</h3><p>每个MyISAM在磁盘上存储成3个文件，其文件名都和表名相同，但扩展名分别是:</p>
+<ul>
+<li>.frm（存储表定义）</li>
+<li>.MYD（MYData，存储表数据）</li>
+<li>.MYI（MYIndex，存储表索引）</li>
+</ul>
+<h2 id="MEMORY"><a href="#MEMORY" class="headerlink" title="MEMORY"></a>MEMORY</h2><p>Memory存储引擎将表的数据存放在内存中。每个MEMORY表实际对应一个磁盘文件，格式是.frm，该文件中只存储表的结构，而其数据文件，都是存储在内存中，这样有利于数据的快速处理，提高整个表的效率。MEMORY类型的表访问非常的快，因为他的数据是存放在内存中的，并且默认使用HASH索引，但是服务一旦关闭，表中的数据就会丢失。</p>
+<h2 id="MERGE"><a href="#MERGE" class="headerlink" title="MERGE"></a>MERGE</h2><p>MERGE存储引擎是一组MyISAM表的组合，这些MyISAM表必须结构完全相同，MERGE表本身并没有存储数据，对MERGE类型的表可以进行查询、更新、删除操作，这些操作实际上是对内部的MyISAM表进行的。</p>
+<p>对于MERGE类型表的插入操作，是通过INSERT_METHOD子句定义插入的表，可以有3个不同的值，使用FIRST或LAST值使得插入操作被相应地作用在第一或者最后一个表上，不定义这个子句或者定义为NO，表示不能对这个MERGE表执行插入操作。</p>
+<p>可以对MERGE表进行DROP操作，但是这个操作只是删除MERGE表的定义，对内部的表是没有任何影响。</p>
+<p>可以理解MERGE存储引擎类型的表，将数据结构相同的MyISAM表union all关联起来的视图，只是视图不能条件筛选，但是merge存储引擎的表可以通过where进行条件筛选</p>
+<h3 id="创建MERGE存储引擎的表"><a href="#创建MERGE存储引擎的表" class="headerlink" title="创建MERGE存储引擎的表"></a>创建MERGE存储引擎的表</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 省略创建 user_01，user_02 engine为myisam的表</span></span><br><span class="line"><span class="comment"># 创建 engine为merge的表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> user_all (</span><br><span class="line">		<span class="comment">#user_01,user_02两张表相同的表结构</span></span><br><span class="line">)<span class="keyword">engine</span> = <span class="keyword">merge</span> <span class="keyword">union</span> = (user_01,user_02) INSERT_METHOD=<span class="keyword">LAST</span> <span class="keyword">default</span> <span class="keyword">charset</span>=utf8mb4;</span><br></pre></td></tr></table></figure>
+
+<h3 id="分别向两张表中插入记录"><a href="#分别向两张表中插入记录" class="headerlink" title="分别向两张表中插入记录"></a>分别向两张表中插入记录</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> user_01 <span class="keyword">values</span>();</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> user_01 <span class="keyword">values</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> user_02 <span class="keyword">values</span>();</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> user_02 <span class="keyword">values</span>();</span><br></pre></td></tr></table></figure>
+
+<h1 id="存储引擎的选择"><a href="#存储引擎的选择" class="headerlink" title="存储引擎的选择"></a>存储引擎的选择</h1><p>在选择存储引擎时，应该根据应用系统的特点选择合适的存储引擎。对于复杂的应用程序，还可以根据实际情况选择多种存储引擎进行组合。以下是几种常用的存储引擎的使用环境。</p>
+<ul>
+<li>InnoDB：对事务业务要求较高，更新、删除操作频繁。对于类似计费系统或者财务系统等对数据准确性要求比较高的系统，InnoDB是最合适的选择。</li>
+<li>MyISAM：如果应用是以读操作和插入操作为主，只有很少的更新和删除操作，并且对事务的完整性，并发性要求不是很高，那么选择MyISAM是非常合适的。</li>
+<li>MEMORY：通常用于更新不频繁的表，用以快速得到访问结果，现在更多是用NoSQL替代了如redis、MongoDB</li>
+<li>MERGE：用于将一系列等同的MyISAM表以逻辑方式组合在一起，并作为一个对象引用他们。MERGE表的优点在于可以突破MyISAM表的限制大小，并且通过将不同的表分布在多个磁盘上，可以有效的改善MERGE表的访问效率。这对于存储诸如数据仓库等环境十分合适。个人认为对于数据量大而分表的数据也可以用MERGE来合并查询。</li>
+</ul>
+<h1 id="放在最后"><a href="#放在最后" class="headerlink" title="放在最后"></a>放在最后</h1><p>本文根据学习B站<a href="https://www.bilibili.com/video/BV1UQ4y1P7Xr?p=32" target="_blank" rel="noopener"><font color="0099ff">【黑马程序员】2020最新MySQL高级教程（求职面试必备）</font></a>p32-p36整理笔记，有需要的同学可以前去系统的学习。</p>
+
+    </div>
+    <!-- 文章结束表示语-->
+    <!-- 如果不是摘录 -->
+      
+        <div>
+            <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">如果文章有问题可以在评论区留言，博客使用Gitalk实现的评论系统，登录后评论我的回复您将会收到Github的邮件提示<br/>当然也可以扫我的微信二维码添加我为好友和我一起沟通在开发中的问题，微信二维码在"菜单栏-联系我"中。<br/>希望大家一起，共同学习，共同成长。</div>
+    
+</div>
+
+        </div>
+      
+
+
+    
+    
+    
+        <div class="reward-container">
+  <div><font color="red">您的支持将鼓励我继续创作！</font></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    赞赏支持
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200422204000194.png" alt="悟空 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200422204017953.png" alt="悟空 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+              <a href="/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" rel="tag"># 存储引擎</a>
+          </div>
+          <!-- bsShare分享-->
+          <!-- 
+          <br/>
+          <div class="bshare-custom icon-medium"><a title="分享到QQ好友" class="bshare-qqim"></a><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到微信" class="bshare-weixin"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/button.js#style=-1&amp;uuid=b92f7440-610c-4617-935f-53bc28fe72cb&amp;pophcol=2&amp;lang=zh"></script><a class="bshareDiv" onclick="javascript:return false;"></a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+          -->
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/mysql/Mysql%E7%B4%A2%E5%BC%95.html" rel="prev" title="Mysql索引">
+      <i class="fa fa-chevron-left"></i> Mysql索引
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/mysql/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%ADsql%E4%BC%98%E5%8C%96%E6%AD%A5%E9%AA%A4.html" rel="next" title="听说你不想只搬砖？——Mysql中sql优化步骤">
+      听说你不想只搬砖？——Mysql中sql优化步骤 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#存储引擎概述"><span class="nav-number">1.</span> <span class="nav-text">存储引擎概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#各种存储引擎特性"><span class="nav-number">2.</span> <span class="nav-text">各种存储引擎特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB"><span class="nav-number">2.1.</span> <span class="nav-text">InnoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务"><span class="nav-number">2.1.1.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#外键"><span class="nav-number">2.1.2.</span> <span class="nav-text">外键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储形式"><span class="nav-number">2.1.3.</span> <span class="nav-text">存储形式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM"><span class="nav-number">2.2.</span> <span class="nav-text">MyISAM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#不支持事务"><span class="nav-number">2.2.1.</span> <span class="nav-text">不支持事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件存储方式"><span class="nav-number">2.2.2.</span> <span class="nav-text">文件存储方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MEMORY"><span class="nav-number">2.3.</span> <span class="nav-text">MEMORY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MERGE"><span class="nav-number">2.4.</span> <span class="nav-text">MERGE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建MERGE存储引擎的表"><span class="nav-number">2.4.1.</span> <span class="nav-text">创建MERGE存储引擎的表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分别向两张表中插入记录"><span class="nav-number">2.4.2.</span> <span class="nav-text">分别向两张表中插入记录</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#存储引擎的选择"><span class="nav-number">3.</span> <span class="nav-text">存储引擎的选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#放在最后"><span class="nav-number">4.</span> <span class="nav-text">放在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="悟空"
+      src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+  <p class="site-author-name" itemprop="name">悟空</p>
+  <div class="site-description" itemprop="description">学得越多会得越少</div>
+  <span class="site-location" itemprop="location"><i class="fa fa-map-marker"></i>&nbsp;重庆 · 九龙坡</span>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=296954345" title="QQ → tencent:&#x2F;&#x2F;AddContact&#x2F;?fromId&#x3D;50&amp;fromSubId&#x3D;1&amp;subcmd&#x3D;all&amp;uin&#x3D;296954345" rel="noopener" target="_blank"><i class="fa fa-qq fa-fw"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:296954345@qq.com" title="E-Mail → mailto:296954345@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/EdisonChenWuKong_admin" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;EdisonChenWuKong_admin" rel="noopener" target="_blank"><i class="fa fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/306267096" title="bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;306267096" rel="noopener" target="_blank"><i class="fa fa-youtube-play fa-fw"></i>bilibili</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <!-- 注释原有桃心
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  -->
+  <span class="author" itemprop="copyrightHolder">悟空</span>
+
+
+    <span style="padding-left:25px;background:url(/images/beian.png) no-repeat left center" rel="nofollow" />
+    <!-- 备案号 --><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">渝ICP备20003439号-1 </a>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">88k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:20</span>
+</div>
+
+<!-- 个人增值信息 -->
+  <div class="theme-info">
+  如果你的能力已经跟不上你的野心，那么就静下心来学习 --学无止境
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/pjax/pjax.min.js"></script>
+  <script src="\lib\fancybox\source\jquery.min.js"></script>
+  <script src="\lib\fancybox\source\jquery.fancybox.min.js"></script>
+  <script src="/lib/lazyload/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+  <script data-pjax>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '504f849365841e0546ad',
+      clientSecret: 'adc04143494fdb979267ebbd509543fc877f3a54',
+      repo        : 'WuKong918-cn.github.io',
+      owner       : 'WuKong918-cn',
+      admin       : ['WuKong918-cn'],
+      id          : '59b74ef138c18176edc9d4d9211a652f',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+    </div>
+  <!-- 动态背景-->
+  
+</body>
+</html>
