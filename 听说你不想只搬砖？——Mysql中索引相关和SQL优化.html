@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/Java_256px.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/Java_32px.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/Java_16px.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="true">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="\lib\font-awesome\css\font-awesome.css">
+  <link rel="stylesheet" href="\lib\fancybox\source\jquery.fancybox.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-flash.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+  <meta name="keywords" content="404 Not Found：该页无法显示" />
+
+
+
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.wukong918.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="索引相关索引是数据库优化最常用的手段之一，通过索引通常可以帮助用户解决大多数的MySQL性能优化问题。 以下的所有操作都只是抛砖引玉的作用，很多场景都是讲的大多数场景不是绝对的场景，具体场景还是需要具体分析，因为Mysql查询机制很优秀会选择“最优执行计划”也和索引的数据结构有关，请读者按着文章实际操作一次，才能更加贴切的了解到索引相关操作的奥秘，光学不写如竹篮打水。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="听说你不想只搬砖？——Mysql中索引相关和SQL优化">
+<meta property="og:url" content="https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%AD%E7%B4%A2%E5%BC%95%E7%9B%B8%E5%85%B3%E5%92%8CSQL%E4%BC%98%E5%8C%96.html">
+<meta property="og:site_name" content="悟空的博客">
+<meta property="og:description" content="索引相关索引是数据库优化最常用的手段之一，通过索引通常可以帮助用户解决大多数的MySQL性能优化问题。 以下的所有操作都只是抛砖引玉的作用，很多场景都是讲的大多数场景不是绝对的场景，具体场景还是需要具体分析，因为Mysql查询机制很优秀会选择“最优执行计划”也和索引的数据结构有关，请读者按着文章实际操作一次，才能更加贴切的了解到索引相关操作的奥秘，光学不写如竹篮打水。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-16T06:16:52.061Z">
+<meta property="article:author" content="悟空">
+<meta property="article:tag" content="sql优化">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="explain">
+<meta property="article:tag" content="索引失效">
+<meta property="article:tag" content="使用索引注意事项">
+<meta property="article:tag" content="最左前缀">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%AD%E7%B4%A2%E5%BC%95%E7%9B%B8%E5%85%B3%E5%92%8CSQL%E4%BC%98%E5%8C%96.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>听说你不想只搬砖？——Mysql中索引相关和SQL优化 | 悟空的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="悟空的博客" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">悟空的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录生活中遇到的，学习到的一些开发技巧</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>联系我</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%AD%E7%B4%A2%E5%BC%95%E7%9B%B8%E5%85%B3%E5%92%8CSQL%E4%BC%98%E5%8C%96.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+      <meta itemprop="name" content="悟空">
+      <meta itemprop="description" content="学得越多会得越少">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="悟空的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          听说你不想只搬砖？——Mysql中索引相关和SQL优化
+        </h1>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-07 00:00:00" itemprop="dateCreated datePublished" datetime="2020-06-07T00:00:00+08:00">2020-06-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="索引相关"><a href="#索引相关" class="headerlink" title="索引相关"></a>索引相关</h1><p>索引是数据库优化最常用的手段之一，通过索引通常可以帮助用户解决大多数的MySQL性能优化问题。</p>
+<p>以下的所有操作都只是抛砖引玉的作用，很多场景都是讲的大多数场景不是绝对的场景，具体场景还是需要具体分析，因为Mysql查询机制很优秀会选择“最优执行计划”也和索引的数据结构有关，请读者按着文章实际操作一次，才能更加贴切的了解到索引相关操作的奥秘，光学不写如竹篮打水。</p>
+<a id="more"></a>
+
+<h2 id="避免索引失效"><a href="#避免索引失效" class="headerlink" title="避免索引失效"></a>避免索引失效</h2><p>以下操作都是模拟操作，请自己手动操作一次加深印象</p>
+<h3 id="全值匹配"><a href="#全值匹配" class="headerlink" title="全值匹配"></a>全值匹配</h3><p>对索引中所有列都指定具体值。该情况下，索引生效，执行效率高。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建索引</span></span><br><span class="line"><span class="keyword">create</span> index_name <span class="keyword">on</span> table_name(a,b,c);</span><br><span class="line"><span class="comment"># sql语句</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> a=? <span class="keyword">and</span> b = ? <span class="keyword">and</span> c=?;</span><br><span class="line"><span class="comment"># explain查看sql执行状态...</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="最左前缀法则"><a href="#最左前缀法则" class="headerlink" title="最左前缀法则"></a>最左前缀法则</h3><p>如果索引了多列，要遵循最左前缀法则。指的是查询从索引的最左前列开始，并且不跳过索引中的列。</p>
+<p>如刚刚创建的索引列为a，b，c。a就是该索引中的最左前列。</p>
+<p>以下将列出几种状况。大家最好都explain看下结果然后理解加深映像。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 只查a 走索引</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> a = ?;</span><br><span class="line"><span class="comment"># 只查 a,b  走索引</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> a= ? <span class="keyword">and</span> b = ?;</span><br><span class="line"><span class="comment"># 查 a,b,c 走索引 全值匹配中已经列过 略</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 只查b 不走索引 违背了最左前缀原则 最左前列为a</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> b = ?;</span><br><span class="line"><span class="comment"># 查 b,c 不走索引，同只查b</span></span><br><span class="line"><span class="comment"># 只查c 不走索引，同只查b</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 只查 a,c中a走了索引 c没走索引 这里需要配合explain命令key_len字段 发现该查询出的key_len和只查a的ke_len相同，相当于用到的索引长度只用到了a的索引，并没有用到c的索引。 违背最左前缀原则，不允许跳过索引列。</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> a = ? <span class="keyword">and</span> c = ?;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 交换顺序查 b,a 走索引 最左前缀原则和查询顺序无关。</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> b = ? <span class="keyword">and</span> a = ?;</span><br></pre></td></tr></table></figure>
+
+<h4 id="最左前缀总结"><a href="#最左前缀总结" class="headerlink" title="最左前缀总结"></a>最左前缀总结</h4><p>联合索引时，建立索引就像是上楼。索引列从左到右，就像从1层爬到n层。人只能一层层的上楼。</p>
+<p>当不包含a列时，就相当于不爬一层楼，直接爬第二层楼，第三层楼，这样是不会走索引的。</p>
+<p>同样查a，c时，爬了一层楼，直接上第三层楼，也是上不上去的，只会用到a的索引。</p>
+<hr>
+<h3 id="使用索引注意事项"><a href="#使用索引注意事项" class="headerlink" title="使用索引注意事项"></a>使用索引注意事项</h3><h4 id="尽量使用覆盖索引"><a href="#尽量使用覆盖索引" class="headerlink" title="尽量使用覆盖索引"></a>尽量使用覆盖索引</h4><p>当使用select *时，就算where的查询符合索引规范，但是实际效率是比 select 索引字段效率低的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 select * 查询 这种方式需要回表查询</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> a = ?;</span><br><span class="line"><span class="comment"># 使用 select 索引列字段查询 该种方式就是覆盖索引</span></span><br><span class="line"><span class="keyword">select</span> a,b,c <span class="keyword">from</span> table_name <span class="keyword">where</span> a = ?;</span><br><span class="line"><span class="comment"># 使用 select 索引字段，加上其他字段 这种方式需要回表查询</span></span><br><span class="line"><span class="keyword">select</span> a,b,c,d <span class="keyword">from</span> table_name <span class="keyword">where</span> a = ?;</span><br></pre></td></tr></table></figure>
+
+<p>此时用explain主要关注点在extra扩展信息这块</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">using index : 使用覆盖索引的时候会出现</span><br><span class="line"></span><br><span class="line">using where : 在查找使用索引的情况下，需要回表去查询所需的数据</span><br><span class="line"></span><br><span class="line">using index condition : 查找使用了索引，但是需要回表查询数据</span><br><span class="line"></span><br><span class="line">using index;using where : 查找使用了索引，但是需要的数据都在索引列中能找到，不需要回表查询了</span><br></pre></td></tr></table></figure>
+
+<p>如果一个索引包含所有需要的查询的字段的值，我们称之为覆盖索引。覆盖索引是非常有用的工具，能够极大的提高性能。因为，只需要读取索引，而无需读表，极大减少数据访问量</p>
+<h4 id="字符串不加单引号"><a href="#字符串不加单引号" class="headerlink" title="字符串不加单引号"></a>字符串不加单引号</h4><p>a的字段为varchar类型</p>
+<p>例如select * from table_name where a = 1</p>
+<p>改成select * from table name where a = ‘1’</p>
+<h4 id="用or分割开的条件"><a href="#用or分割开的条件" class="headerlink" title="用or分割开的条件"></a>用or分割开的条件</h4><p>如果or前的条件中的列有单列索引，不能是复合索引，而后面的列中没有索引，那么涉及到的索引都不会被用到。</p>
+<p>a,b,c的联合索引，d不是索引列，中间是or进行连接是不走索引的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 索引全部失效</span></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> a = ? <span class="keyword">or</span> d = ?;</span><br></pre></td></tr></table></figure>
+
+<h4 id="范围查询"><a href="#范围查询" class="headerlink" title="范围查询"></a>范围查询</h4><p>mysql 会一直向右匹配直到遇到范围查询（&gt;、&lt;、between、like）就停止匹配。范围列可以用到索引，但是范围列后面的列无法用到索引。即，索引最多用于一个范围列，因此如果查询条件中有两个范围列则无法全用到索引</p>
+<h4 id="like语句的索引问题"><a href="#like语句的索引问题" class="headerlink" title="like语句的索引问题"></a>like语句的索引问题</h4><p>如果通配符 % 不出现在开头，则可以用到索引，但根据具体情况不同可能只会用其中一个前缀<br>在 like “value%” 可以使用索引，但是 like “%value%” 不会使用索引，走的是全表扫描</p>
+<p>如果想解决%出现在开头这个问题使<font color="red">覆盖索引</font>来解决这个问题。</p>
+<p>a,b,c的联合索引</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用覆盖索引解决</span></span><br><span class="line"><span class="keyword">select</span> a,b,c <span class="keyword">from</span> table_name <span class="keyword">where</span> a <span class="keyword">like</span> <span class="string">'%哈哈%'</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="不要在列上进行运算"><a href="#不要在列上进行运算" class="headerlink" title="不要在列上进行运算"></a>不要在列上进行运算</h4><p>如果查询条件中含有函数或表达式，将导致索引失效而进行全表扫描<br>例如 select * from user where YEAR(birthday) &lt; 1990<br>可以改造成 select * from users where birthday &lt;’1990-01-01′</p>
+<h4 id="索引不会包含NULL列"><a href="#索引不会包含NULL列" class="headerlink" title="索引不会包含NULL列"></a>索引不会包含NULL列</h4><p>只要列中包含有 NULL 值都将不会被包含在索引中，复合索引中只要有一列含有 NULL 值，那么这一列对于此复合索引就是无效的。所以在数据库设计时不要让字段的默认值为 NULL</p>
+<h4 id="选择区分度高的列作为索引"><a href="#选择区分度高的列作为索引" class="headerlink" title="选择区分度高的列作为索引"></a>选择区分度高的列作为索引</h4><p>尽量选择区分度高的列作为索引，区分度的公式是<code>count(distinct col)/count(*)</code>，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是 1，而一些状态、性别字段可能在大数据面前区分度就是 0。一般需要 join 的字段都要求区分度 0.1 以上，即平均 1 条扫描 10 条记录。</p>
+<h4 id="Mysql不使用索引，全表扫描"><a href="#Mysql不使用索引，全表扫描" class="headerlink" title="Mysql不使用索引，全表扫描"></a>Mysql不使用索引，全表扫描</h4><p>当我们某个字段的值区分度分常低的时候，Mysql底层会判断发现，走了索引和全表扫描性能差距不大，甚至全表扫描速度比走索引还快时，Mysql就不会走索引。</p>
+<p>场景： user表中总共有100条数据，age为索引列，其中age=23的有99条，age=22的有1条。 索引区分度=0.02=2/100。</p>
+<p>因为age=23数据占99%占绝大多数，Mysql不如走全表扫描速度快点。</p>
+<p>age=22占1%，Mysql走索引要快点，所以走索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mysql会判断不走索引</span></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age = <span class="number">23</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当查询age=22的时候走索引</span></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age = <span class="number">22</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="IS-NULL-和-IS-NOT-NULL-有时走索引。"><a href="#IS-NULL-和-IS-NOT-NULL-有时走索引。" class="headerlink" title="IS NULL 和 IS NOT NULL 有时走索引。"></a>IS NULL 和 IS NOT NULL 有时走索引。</h4><p>和Mysql不使用索引，全表扫描的原理差不多。</p>
+<p>当NULL值占比很大时，where a is null 不走索引全表扫描。is not null大概率会走索引，具体要看占数据比例。Mysql会自己判断。</p>
+<p>当NOT NULL值占比大时，where a is not null不走索引全表扫描。is null 大概率会走索引，具体看占数据比例。Mysql会自己判断。</p>
+<h4 id="in-走索引-not-in-有时不走索引"><a href="#in-走索引-not-in-有时不走索引" class="headerlink" title="in 走索引 not in 有时不走索引"></a>in 走索引 not in 有时不走索引</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 走索引</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">in</span> (<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>);</span><br><span class="line"><span class="comment"># 不走索引</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> <span class="keyword">id</span> <span class="keyword">not</span> <span class="keyword">in</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这时我们在实际查询中发现怎么not in也走索引了？</p>
+<p>具体问题还是要具体分析的。</p>
+<p>因为在很多场景下，NOT IN或&lt;&gt;两类操作使用二级索引的成本远超于全表扫描的成本，查询优化器按照成本选择”最优执行计划”，导致查询不走二级索引。但不能因此就彻底判断NOT IN或&lt;&gt;两类操作不能走索引。</p>
+<hr>
+<h3 id="单列索引和复合索引的选择"><a href="#单列索引和复合索引的选择" class="headerlink" title="单列索引和复合索引的选择"></a>单列索引和复合索引的选择</h3><p>尽量使用复合索引，<font color="red">少使用或尽量不用单列索引</font></p>
+<p>创建复合索引就相当于创建了三个索引</p>
+<p>例如复合索引a,b,c 创建了如下三个索引</p>
+<ol>
+<li>a</li>
+<li>a + b</li>
+<li>a + b + c</li>
+</ol>
+<p>如果创建了3个单列索引，Mysql会选择最优的一个索引使用，不会用到全部索引。</p>
+<p>Mysql怎么去选择最优索引呢？ 这涉及到上面说的选择区分度高的字段加索引。区分度越高的索引查询出的数据越少，查询速度越快。</p>
+<p>以下讲解几种情况。</p>
+<p>场景：表中两个字段有单列索引 name和mobile 表中10条数据。 </p>
+<p>name有5条数据都为’测试’，其余的数据都不相同。</p>
+<p>mobile有9条数据都为’12345678901’，剩下一条为’12345678902’</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这个和最左前缀原则无关，因为都是单列索引 最终选择了name的索引</span></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'测试'</span> <span class="keyword">and</span> mobile = <span class="string">'12345678901'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当mobile='12345678902' 最终选择mobile索引</span></span><br><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'测试'</span> <span class="keyword">and</span> mobile = <span class="string">'12345678902'</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="查看索引的使用情况"><a href="#查看索引的使用情况" class="headerlink" title="查看索引的使用情况"></a>查看索引的使用情况</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前会话的索引使用情况</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">status</span> <span class="keyword">like</span> <span class="string">'Handler_read%'</span>;</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| Variable_name         | Value |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| Handler_read_first    | 0     |</span><br><span class="line">| Handler_read_key      | 0     |</span><br><span class="line">| Handler_read_next     | 0     |</span><br><span class="line">| Handler_read_prev     | 0     |</span><br><span class="line">| Handler_read_rnd      | 0     |</span><br><span class="line">| Handler_read_rnd_next | 74    |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">6 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看全局的索引使用情况</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> <span class="keyword">status</span> <span class="keyword">like</span> <span class="string">'Handler_read%'</span>;</span><br><span class="line">+<span class="comment">-----------------------+--------------+</span></span><br><span class="line">| Variable_name         | Value        |</span><br><span class="line">+<span class="comment">-----------------------+--------------+</span></span><br><span class="line">| Handler_read_first    | 1785153      |</span><br><span class="line">| Handler_read_key      | 2650399364   |</span><br><span class="line">| Handler_read_next     | 104781425    |</span><br><span class="line">| Handler_read_prev     | 55082598     |</span><br><span class="line">| Handler_read_rnd      | 14893605     |</span><br><span class="line">| Handler_read_rnd_next | 244848860571 |</span><br><span class="line">+<span class="comment">-----------------------+--------------+</span></span><br><span class="line">6 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>分析这几个值，我们可以查看当前索引的使用情况：</p>
+<h4 id="Handler-read-first："><a href="#Handler-read-first：" class="headerlink" title="Handler_read_first："></a>Handler_read_first：</h4><p>索引中第一条被读的次数。如果较高，它表示服务器正执行大量全索引扫描；例如，SELECT col1 FROM foo，假定col1有索引（这个值越低越好）。</p>
+<h4 id="Handler-read-key："><a href="#Handler-read-key：" class="headerlink" title="Handler_read_key："></a>Handler_read_key：</h4><p>如果索引正在工作，这个值代表一个行被索引值读的次数，如果值越低，表示索引得到的性能改善不高，因为索引不经常使用（这个值越高越好）。</p>
+<h4 id="Handler-read-next-："><a href="#Handler-read-next-：" class="headerlink" title="Handler_read_next ："></a>Handler_read_next ：</h4><p>按照键顺序读下一行的请求数。如果你用范围约束或如果执行索引扫描来查询索引列，该值增加。</p>
+<h4 id="Handler-read-prev："><a href="#Handler-read-prev：" class="headerlink" title="Handler_read_prev："></a>Handler_read_prev：</h4><p>按照键顺序读前一行的请求数。该读方法主要用于优化ORDER BY … DESC。</p>
+<h4 id="Handler-read-rnd-："><a href="#Handler-read-rnd-：" class="headerlink" title="Handler_read_rnd ："></a>Handler_read_rnd ：</h4><p>根据固定位置读一行的请求数。如果你正执行大量查询并需要对结果进行排序该值较高。你可能使用了大量需要MySQL扫描整个表的查询或你的连接没有正确使用键。这个值较高，意味着运行效率低，应该建立索引来补救。</p>
+<h4 id="Handler-read-rnd-next："><a href="#Handler-read-rnd-next：" class="headerlink" title="Handler_read_rnd_next："></a>Handler_read_rnd_next：</h4><p>在数据文件中读下一行的请求数。如果你正进行大量的表扫描，该值较高。通常说明你的表索引不正确或写入的查询没有利用索引。</p>
+<hr>
+<h1 id="SQL优化"><a href="#SQL优化" class="headerlink" title="SQL优化"></a>SQL优化</h1><h2 id="优化insert语句"><a href="#优化insert语句" class="headerlink" title="优化insert语句"></a>优化insert语句</h2><p>当进行数据的insert操作的时候，可以考虑采用以下几种优化方案。</p>
+<h3 id="对一张表插入很多行数据时"><a href="#对一张表插入很多行数据时" class="headerlink" title="对一张表插入很多行数据时"></a>对一张表插入很多行数据时</h3><p>尽量使用多个值表的insert语句，这种方式将大大的缩减客户端与数据库之间的连接，关闭等消耗。使得效率比分开执行的单个insert语句快。</p>
+<p>原始方式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'1'</span>,<span class="string">'a'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'2'</span>,<span class="string">'b'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'3'</span>,<span class="string">'c'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>优化后方案：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'1'</span>,<span class="string">'a'</span>),(<span class="string">'2'</span>,<span class="string">'b'</span>),(<span class="string">'3'</span>,<span class="string">'c'</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="在事务中进行数据插入"><a href="#在事务中进行数据插入" class="headerlink" title="在事务中进行数据插入"></a>在事务中进行数据插入</h3><p>减少多次自动提交事务的连接</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'1'</span>,<span class="string">'a'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'2'</span>,<span class="string">'b'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'3'</span>,<span class="string">'c'</span>);</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据主键有序插入"><a href="#数据主键有序插入" class="headerlink" title="数据主键有序插入"></a>数据主键有序插入</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以下是无序的</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'2'</span>,<span class="string">'b'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'1'</span>,<span class="string">'a'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> table_name <span class="keyword">values</span>(<span class="string">'3'</span>,<span class="string">'c'</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="优化order-by-语句"><a href="#优化order-by-语句" class="headerlink" title="优化order by 语句"></a>优化order by 语句</h2><p>explain查看执行计划的extra，using index效率最高 using filesort效率低</p>
+<ol>
+<li>首先order by的字段必须都是有索引的，其次要使用覆盖索引返回，不然会using filesort效率低</li>
+<li>order by的顺序和联合索引的顺序必须相同</li>
+<li>order by的字段要么都是升序，要么都是降序</li>
+</ol>
+<h3 id="filesort优化"><a href="#filesort优化" class="headerlink" title="filesort优化"></a>filesort优化</h3><p>当我们无法避免filesort优化时，还是需要对filesort进行优化</p>
+<h4 id="两种排序方式"><a href="#两种排序方式" class="headerlink" title="两种排序方式"></a>两种排序方式</h4><ol>
+<li>两次扫描算法：MySQL 4.1之前，使用该方式排序。首先根据条件取出排序字段和行指针信息，然后在排序区sort buff中排序，如果sort buff不够，则在临时表temporary table中存储排序结果。完成排序后，再根据行指针回表读取记录，该操作可能会导致大量随机I/O操作。</li>
+<li>一次扫描算法：一次性去除满足条件的字段，然后在排序区sort buff中排序后直接输出结果集。排序内存开销大，但是排序效率比两次扫描算法高。</li>
+</ol>
+<h4 id="具体优化方式"><a href="#具体优化方式" class="headerlink" title="具体优化方式"></a>具体优化方式</h4><p>MySQL通过比较系统变量max_length_for_sort_data的大小和Query语句取出的字段总大小，来判定是否哪种排序方法，如果max_length_for_sort_data更大，那么使用第二种优化之后的算法；否则使用第一种。</p>
+<p>可以适当提高max_length_for_sort_data和sort_buffer_size系统变量，来增大排序区的大小，提高排序效率。</p>
+<hr>
+<h2 id="优化group-by语句"><a href="#优化group-by语句" class="headerlink" title="优化group by语句"></a>优化group by语句</h2><p>由于Group By实际上同样会进行排序操作，而且与ORDER BY相比，GROUP BY主要是多了排序之后的分组操作。当然，如果在分组的时候还使用了其他的一些聚合函数，那么还需要一些聚合函数的计算。所以在GROUP BY的实现过程中，与ORDER BY一样也可以利用到索引。</p>
+<ol>
+<li><p>如果查询包含group by但是用户想要避免排序结果的消耗，则可以执行order by null禁止排序。如下：</p>
+ <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这样执行 explain时 extra会提示using filesort</span></span><br><span class="line"><span class="keyword">select</span> age, <span class="keyword">count</span>(*) <span class="keyword">from</span> table_name <span class="keyword">group</span> <span class="keyword">by</span> age;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 优化后</span></span><br><span class="line"><span class="keyword">select</span> age, <span class="keyword">count</span>(*) <span class="keyword">from</span> table_name <span class="keyword">group</span> <span class="keyword">by</span> age <span class="keyword">order</span> <span class="keyword">by</span> <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建对应字段的索引来提高group by的效率</p>
+</li>
+</ol>
+<hr>
+<h2 id="优化嵌套查询"><a href="#优化嵌套查询" class="headerlink" title="优化嵌套查询"></a>优化嵌套查询</h2><p>MySQL4.1之后，开始支持SQL的子查询。这个技术可以使用SELECT语句来创建一个单列的查询结果，然后把这个结果作为过滤条件用在另外一个查询当中。使用子查询可以一次性的完成很多逻辑上需要多个步骤才能完成的SQL操作，同时也可以避免事务或者表锁死，而且写起来很容易。但是，有些情况下，子查询时可以被更高效的连接（JOIN）替代。</p>
+<hr>
+<h2 id="优化OR条件"><a href="#优化OR条件" class="headerlink" title="优化OR条件"></a>优化OR条件</h2><p>对于包含OR的查询子句，如果要利用索引，则OR之间的每个条件列都必须用到索引，而且不能使用到复合索引；如果没有索引，则应该考虑增加索引。</p>
+<p>建议使用union替换or</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 替换前 </span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> a = <span class="number">1</span> <span class="keyword">or</span> b = <span class="string">'测试'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用union 优化</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> a = <span class="number">1</span> <span class="keyword">union</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> b = <span class="string">'测试'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用union替换后可以发现相比or explain出来后 or 的type为range union的为两个效率更好的type</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="优化分页查询"><a href="#优化分页查询" class="headerlink" title="优化分页查询"></a>优化分页查询</h2><p>一般分页查询时，通过创建覆盖索引能够比较好的提高性能。一个常见又非常头疼的问题就是limit 2000000,10 </p>
+<p>此时需要MySQL排序前2000010条记录，仅仅返回2000000-2000010的记录，其记录丢弃，查询排序的代价非常大。</p>
+<h3 id="优化思路一"><a href="#优化思路一" class="headerlink" title="优化思路一"></a>优化思路一</h3><p>在索引上完成排序分页操作，最后根据主键关联回原标查询所需要的其他列内容。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name t0,(<span class="keyword">select</span> <span class="keyword">id</span> <span class="keyword">from</span> table_name <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">id</span> <span class="keyword">limit</span> <span class="number">2000000</span>,<span class="number">10</span>) t1 <span class="keyword">where</span> t0.id = t1.id;</span><br></pre></td></tr></table></figure>
+
+<h3 id="优化思路二"><a href="#优化思路二" class="headerlink" title="优化思路二"></a>优化思路二</h3><p>该方案适用于主键自增的表（不能出现id断层，也不能出现其他条件查询），可以把limit查询转换成某个位置的查询。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">where</span> <span class="keyword">id</span> &gt; <span class="number">2000000</span> <span class="keyword">limit</span> <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="使用SQL提示"><a href="#使用SQL提示" class="headerlink" title="使用SQL提示"></a>使用SQL提示</h2><p>SQL提示，是优化数据库的一个重要手段，简单来说，就是在SQL语句中加入一些人为的提示来达到优化操作的目的。</p>
+<h3 id="USE-INDEX"><a href="#USE-INDEX" class="headerlink" title="USE INDEX"></a>USE INDEX</h3><p>在查询语句表明的后面，添加use index来提供希望MySQL去参考（仅仅是一个参考，并不是强制性的，最终选择还是看Mysql选择的最优查询方案）的索引表，就可以让MySQL不再考虑其他可用索引</p>
+<p>当explain查看执行计划时，possible_keys有多个时可以使用。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">use</span> <span class="keyword">index</span>(index_name);</span><br></pre></td></tr></table></figure>
+
+<h3 id="IGNORE-INDEX"><a href="#IGNORE-INDEX" class="headerlink" title="IGNORE INDEX"></a>IGNORE INDEX</h3><p>如果用户只是单纯的想让MySQL忽略一个或者多个索引，则可以使用 ignore index</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">ignore</span> <span class="keyword">index</span>(index_name);</span><br></pre></td></tr></table></figure>
+
+<h3 id="FORCE-INDEX"><a href="#FORCE-INDEX" class="headerlink" title="FORCE INDEX"></a>FORCE INDEX</h3><p>为强制MySQL使用一个特定的索引，可在查询中使用force index。因为use index只是一个参考，当Mysql判断参考的查询索引不够快时，会选择其他索引查询。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> table_name <span class="keyword">force</span> <span class="keyword">index</span>(index_name);</span><br></pre></td></tr></table></figure>
+
+<h1 id="放在最后"><a href="#放在最后" class="headerlink" title="放在最后"></a>放在最后</h1><p>本文根据学习B站<a href="https://www.bilibili.com/video/BV1UQ4y1P7Xr?p=47" target="_blank" rel="noopener"><font color="0099ff">【黑马程序员】2020最新MySQL高级教程（求职面试必备）</font></a>p47-p66整理笔记，有需要的同学可以前去系统的学习。</p>
+
+    </div>
+    <!-- 文章结束表示语-->
+    <!-- 如果不是摘录 -->
+      
+        <div>
+            <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">如果文章有问题可以在评论区留言，博客使用Gitalk实现的评论系统，登录后评论我的回复您将会收到Github的邮件提示<br/>当然也可以扫我的微信二维码添加我为好友和我一起沟通在开发中的问题，微信二维码在"菜单栏-联系我"中。<br/>希望大家一起，共同学习，共同成长。</div>
+    
+</div>
+
+        </div>
+      
+
+
+    
+    
+    
+        <div class="reward-container">
+  <div><font color="red">您的支持将鼓励我继续创作！</font></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    赞赏支持
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200422204000194.png" alt="悟空 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/image-20200422204017953.png" alt="悟空 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+              <a href="/tags/sql%E4%BC%98%E5%8C%96/" rel="tag"># sql优化</a>
+          </div>
+          <!-- bsShare分享-->
+          <!-- 
+          <br/>
+          <div class="bshare-custom icon-medium"><a title="分享到QQ好友" class="bshare-qqim"></a><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到微信" class="bshare-weixin"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/button.js#style=-1&amp;uuid=b92f7440-610c-4617-935f-53bc28fe72cb&amp;pophcol=2&amp;lang=zh"></script><a class="bshareDiv" onclick="javascript:return false;"></a><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+          -->
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%ADsql%E4%BC%98%E5%8C%96%E6%AD%A5%E9%AA%A4.html" rel="prev" title="听说你不想只搬砖？——Mysql中sql优化步骤">
+      <i class="fa fa-chevron-left"></i> 听说你不想只搬砖？——Mysql中sql优化步骤
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%AD%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98%E4%BC%98%E5%8C%96.html" rel="next" title="听说你不想只搬砖？——Mysql中查询缓存优化">
+      听说你不想只搬砖？——Mysql中查询缓存优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#索引相关"><span class="nav-number">1.</span> <span class="nav-text">索引相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#避免索引失效"><span class="nav-number">1.1.</span> <span class="nav-text">避免索引失效</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全值匹配"><span class="nav-number">1.1.1.</span> <span class="nav-text">全值匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最左前缀法则"><span class="nav-number">1.1.2.</span> <span class="nav-text">最左前缀法则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#最左前缀总结"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">最左前缀总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用索引注意事项"><span class="nav-number">1.1.3.</span> <span class="nav-text">使用索引注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#尽量使用覆盖索引"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">尽量使用覆盖索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串不加单引号"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">字符串不加单引号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用or分割开的条件"><span class="nav-number">1.1.3.3.</span> <span class="nav-text">用or分割开的条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#范围查询"><span class="nav-number">1.1.3.4.</span> <span class="nav-text">范围查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#like语句的索引问题"><span class="nav-number">1.1.3.5.</span> <span class="nav-text">like语句的索引问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不要在列上进行运算"><span class="nav-number">1.1.3.6.</span> <span class="nav-text">不要在列上进行运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引不会包含NULL列"><span class="nav-number">1.1.3.7.</span> <span class="nav-text">索引不会包含NULL列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#选择区分度高的列作为索引"><span class="nav-number">1.1.3.8.</span> <span class="nav-text">选择区分度高的列作为索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mysql不使用索引，全表扫描"><span class="nav-number">1.1.3.9.</span> <span class="nav-text">Mysql不使用索引，全表扫描</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IS-NULL-和-IS-NOT-NULL-有时走索引。"><span class="nav-number">1.1.3.10.</span> <span class="nav-text">IS NULL 和 IS NOT NULL 有时走索引。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#in-走索引-not-in-有时不走索引"><span class="nav-number">1.1.3.11.</span> <span class="nav-text">in 走索引 not in 有时不走索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单列索引和复合索引的选择"><span class="nav-number">1.1.4.</span> <span class="nav-text">单列索引和复合索引的选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看索引的使用情况"><span class="nav-number">1.1.5.</span> <span class="nav-text">查看索引的使用情况</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Handler-read-first："><span class="nav-number">1.1.5.1.</span> <span class="nav-text">Handler_read_first：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Handler-read-key："><span class="nav-number">1.1.5.2.</span> <span class="nav-text">Handler_read_key：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Handler-read-next-："><span class="nav-number">1.1.5.3.</span> <span class="nav-text">Handler_read_next ：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Handler-read-prev："><span class="nav-number">1.1.5.4.</span> <span class="nav-text">Handler_read_prev：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Handler-read-rnd-："><span class="nav-number">1.1.5.5.</span> <span class="nav-text">Handler_read_rnd ：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Handler-read-rnd-next："><span class="nav-number">1.1.5.6.</span> <span class="nav-text">Handler_read_rnd_next：</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL优化"><span class="nav-number">2.</span> <span class="nav-text">SQL优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#优化insert语句"><span class="nav-number">2.1.</span> <span class="nav-text">优化insert语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对一张表插入很多行数据时"><span class="nav-number">2.1.1.</span> <span class="nav-text">对一张表插入很多行数据时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在事务中进行数据插入"><span class="nav-number">2.1.2.</span> <span class="nav-text">在事务中进行数据插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据主键有序插入"><span class="nav-number">2.1.3.</span> <span class="nav-text">数据主键有序插入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化order-by-语句"><span class="nav-number">2.2.</span> <span class="nav-text">优化order by 语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#filesort优化"><span class="nav-number">2.2.1.</span> <span class="nav-text">filesort优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#两种排序方式"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">两种排序方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#具体优化方式"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">具体优化方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化group-by语句"><span class="nav-number">2.3.</span> <span class="nav-text">优化group by语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化嵌套查询"><span class="nav-number">2.4.</span> <span class="nav-text">优化嵌套查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化OR条件"><span class="nav-number">2.5.</span> <span class="nav-text">优化OR条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优化分页查询"><span class="nav-number">2.6.</span> <span class="nav-text">优化分页查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优化思路一"><span class="nav-number">2.6.1.</span> <span class="nav-text">优化思路一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化思路二"><span class="nav-number">2.6.2.</span> <span class="nav-text">优化思路二</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用SQL提示"><span class="nav-number">2.7.</span> <span class="nav-text">使用SQL提示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#USE-INDEX"><span class="nav-number">2.7.1.</span> <span class="nav-text">USE INDEX</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IGNORE-INDEX"><span class="nav-number">2.7.2.</span> <span class="nav-text">IGNORE INDEX</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FORCE-INDEX"><span class="nav-number">2.7.3.</span> <span class="nav-text">FORCE INDEX</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#放在最后"><span class="nav-number">3.</span> <span class="nav-text">放在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="悟空"
+      src="https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201124192552.jpeg">
+  <p class="site-author-name" itemprop="name">悟空</p>
+  <div class="site-description" itemprop="description">学得越多会得越少</div>
+  <span class="site-location" itemprop="location"><i class="fa fa-map-marker"></i>&nbsp;重庆 · 九龙坡</span>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=296954345" title="QQ → tencent:&#x2F;&#x2F;AddContact&#x2F;?fromId&#x3D;50&amp;fromSubId&#x3D;1&amp;subcmd&#x3D;all&amp;uin&#x3D;296954345" rel="noopener" target="_blank"><i class="fa fa-qq fa-fw"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:296954345@qq.com" title="E-Mail → mailto:296954345@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/EdisonChenWuKong_admin" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;EdisonChenWuKong_admin" rel="noopener" target="_blank"><i class="fa fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/306267096" title="bilibili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;306267096" rel="noopener" target="_blank"><i class="fa fa-youtube-play fa-fw"></i>bilibili</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>RSS</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <!-- 注释原有桃心
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  -->
+  <span class="author" itemprop="copyrightHolder">悟空</span>
+
+
+    <span style="padding-left:25px;background:url(/images/beian.png) no-repeat left center" rel="nofollow" />
+    <!-- 备案号 --><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">渝ICP备20003439号-1 </a>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">88k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:20</span>
+</div>
+
+<!-- 个人增值信息 -->
+  <div class="theme-info">
+  如果你的能力已经跟不上你的野心，那么就静下心来学习 --学无止境
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="\lib\fancybox\source\jquery.min.js"></script>
+  <script src="\lib\fancybox\source\jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '504f849365841e0546ad',
+      clientSecret: 'adc04143494fdb979267ebbd509543fc877f3a54',
+      repo        : 'WuKong918-cn.github.io',
+      owner       : 'WuKong918-cn',
+      admin       : ['WuKong918-cn'],
+      id          : 'df11b126e230e7810b4196f8cb84617f',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+  <!-- 动态背景-->
+  
+</body>
+</html>

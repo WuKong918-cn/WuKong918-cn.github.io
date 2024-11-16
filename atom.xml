@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>悟空的博客</title>
+  
+  <subtitle>记录生活中遇到的，学习到的一些开发技巧</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://www.wukong918.cn/"/>
+  <updated>2024-11-16T06:16:52.057Z</updated>
+  <id>https://www.wukong918.cn/</id>
+  
+  <author>
+    <name>悟空</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>BIO、NIO、AIO对比分析</title>
+    <link href="https://www.wukong918.cn/BIO%E3%80%81NIO%E3%80%81AIO%E5%88%86%E6%9E%90.html"/>
+    <id>https://www.wukong918.cn/BIO%E3%80%81NIO%E3%80%81AIO%E5%88%86%E6%9E%90.html</id>
+    <published>2022-05-01T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.057Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;常见的概念&quot;&gt;&lt;a href=&quot;#常见的概念&quot; class=&quot;headerlink&quot; title=&quot;常见的概念&quot;&gt;&lt;/a&gt;常见的概念&lt;/h1&gt;&lt;h2 id=&quot;定义&quot;&gt;&lt;a href=&quot;#定义&quot; class=&quot;headerlink&quot; title=&quot;定义&quot;&gt;&lt;/a&gt;定义&lt;/h2&gt;&lt;p&gt;Java中BIO、NIO、AIO是Java语言对于操作系统各种IO模型的封装，程序能使用什么类型的IO取决于系统是否支持该种IO类型的操作。&lt;/p&gt;
+&lt;h2 id=&quot;同步与异步&quot;&gt;&lt;a href=&quot;#同步与异步&quot; class=&quot;headerlink&quot; title=&quot;同步与异步&quot;&gt;&lt;/a&gt;同步与异步&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;同步&lt;/code&gt;: 是发起一个调用后，&lt;strong&gt;被调用者未处理完成请求前，调用不会返回&lt;/strong&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;异步&lt;/code&gt;: 是发起一个调用后，&lt;strong&gt;立刻得到被调用者回应&lt;/strong&gt;表示已经接收到请求。但返回的并不是结果，这是调用者可以去处理其他的请求，被调用者通常依靠事件、回调等机制来通知调用者其返回结果。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;区别&lt;/code&gt;：&lt;strong&gt;同步需要调用者等待结果，而异步不需要调用者等待结果&lt;/strong&gt;，被调用者会通过回调等机制来通知调用者其返回结果。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;关注点&lt;/code&gt;: 同步和异步关注的是&lt;strong&gt;消息通信机制&lt;/strong&gt;。所谓同步，就是在发出一个&lt;strong&gt;调用&lt;/strong&gt;时，在没有得到&lt;strong&gt;结果&lt;/strong&gt;之前，该&lt;strong&gt;调用&lt;/strong&gt;就不返回。但是一旦&lt;strong&gt;调用返回，就得到返回值了&lt;/strong&gt;。换句话说，就是由&lt;strong&gt;调用者&lt;/strong&gt;主动等待这个调用的结果。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;阻塞和非阻塞&quot;&gt;&lt;a href=&quot;#阻塞和非阻塞&quot; class=&quot;headerlink&quot; title=&quot;阻塞和非阻塞&quot;&gt;&lt;/a&gt;阻塞和非阻塞&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;阻塞&lt;/code&gt;: 发起一个请求，调用者会一直等待请求结果的返回，也就是当前线程会被挂起，无法从事其他任务，当条件就绪才能继续。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;非阻塞&lt;/code&gt;: 发起一个请求，&lt;strong&gt;立马返回结果&lt;/strong&gt;，不用等待条件就绪才返回。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;关注点&lt;/code&gt;: 阻塞和非阻塞关注的是&lt;strong&gt;程序在等待调用结果（消息、返回值）时的状态&lt;/strong&gt;。阻塞调用是指调用结果返回之前，当前线程会被挂起，被调用程序只有在得到结果之后才会返回。非阻塞调用是指在不能立刻得到结果之前，该调用不会阻塞当前线程。&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+      <category term="Netty" scheme="https://www.wukong918.cn/categories/Netty/"/>
+    
+    
+      <category term="Netty" scheme="https://www.wukong918.cn/tags/Netty/"/>
+    
+      <category term="BIO" scheme="https://www.wukong918.cn/tags/BIO/"/>
+    
+      <category term="NIO" scheme="https://www.wukong918.cn/tags/NIO/"/>
+    
+      <category term="AIO" scheme="https://www.wukong918.cn/tags/AIO/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Netty大纲</title>
+    <link href="https://www.wukong918.cn/Netty%E5%A4%A7%E7%BA%B2.html"/>
+    <id>https://www.wukong918.cn/Netty%E5%A4%A7%E7%BA%B2.html</id>
+    <published>2022-04-19T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.059Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h2&gt;&lt;p&gt;Netty是一个提供异步事件驱动的网络应用框架，是一个用以快速开发高性能、可扩展协议的服务器和客户端的工具。换句话说，Netty 是一个 NIO 客户端服务器框架，使用它可以快速简单地开发网络应用程序，比如服务器和客户端的协议。Netty 大大简化了网络编程，比如 TCP 和 UDP 的 socket 服务的开发。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Netty" scheme="https://www.wukong918.cn/categories/Netty/"/>
+    
+    
+      <category term="Netty" scheme="https://www.wukong918.cn/tags/Netty/"/>
+    
+      <category term="Java" scheme="https://www.wukong918.cn/tags/Java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux从认识操作系统开始</title>
+    <link href="https://www.wukong918.cn/linux%E4%BB%8E%E8%AE%A4%E8%AF%86%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%A7%8B.html"/>
+    <id>https://www.wukong918.cn/linux%E4%BB%8E%E8%AE%A4%E8%AF%86%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%A7%8B.html</id>
+    <published>2020-11-07T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.059Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;一-从认识操作系统开始&quot;&gt;&lt;a href=&quot;#一-从认识操作系统开始&quot; class=&quot;headerlink&quot; title=&quot;一 从认识操作系统开始&quot;&gt;&lt;/a&gt;&lt;strong&gt;一 从认识操作系统开始&lt;/strong&gt;&lt;/h1&gt;&lt;h2 id=&quot;1-1-操作系统简介&quot;&gt;&lt;a href=&quot;#1-1-操作系统简介&quot; class=&quot;headerlink&quot; title=&quot;1.1 操作系统简介&quot;&gt;&lt;/a&gt;&lt;strong&gt;1.1&lt;/strong&gt; &lt;strong&gt;操作系统简介&lt;/strong&gt;&lt;/h2&gt;&lt;p&gt;我通过以下四点介绍什么是操作系统：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;操作系统（Operation System，简称OS）是管理计算机硬件与软件资源的程序，是计算机系统的内核与基石；&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;操作系统本质上是运行在计算机上的软件程序 ；&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;为用户提供一个与系统交互的操作界面 ；&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;操作系统分内核与外壳（我们可以把外壳理解成围绕着内核的应用程序，而内核就是能操作硬件的程序）。&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img data-src=&quot;https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20201108181606.png&quot; alt=&quot;操作系统分内核与外壳&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Linux" scheme="https://www.wukong918.cn/categories/Linux/"/>
+    
+    
+      <category term="Linux" scheme="https://www.wukong918.cn/tags/Linux/"/>
+    
+      <category term="操作命令" scheme="https://www.wukong918.cn/tags/%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4/"/>
+    
+      <category term="操作系统" scheme="https://www.wukong918.cn/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql共享锁、排他锁</title>
+    <link href="https://www.wukong918.cn/Mysql%E5%85%B1%E4%BA%AB%E9%94%81%E3%80%81%E6%8E%92%E4%BB%96%E9%94%81.html"/>
+    <id>https://www.wukong918.cn/Mysql%E5%85%B1%E4%BA%AB%E9%94%81%E3%80%81%E6%8E%92%E4%BB%96%E9%94%81.html</id>
+    <published>2020-07-07T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.059Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Mysql共享锁、排他锁&quot;&gt;&lt;a href=&quot;#Mysql共享锁、排他锁&quot; class=&quot;headerlink&quot; title=&quot;Mysql共享锁、排他锁&quot;&gt;&lt;/a&gt;Mysql共享锁、排他锁&lt;/h1&gt;&lt;h2 id=&quot;名词及含义&quot;&gt;&lt;a href=&quot;#名词及含义&quot; class=&quot;headerlink&quot; title=&quot;名词及含义&quot;&gt;&lt;/a&gt;&lt;strong&gt;名词及含义&lt;/strong&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;表级锁（锁定整个表）&lt;/li&gt;
+&lt;li&gt;页级锁（锁定一页）&lt;/li&gt;
+&lt;li&gt;行级锁（锁定一行）&lt;/li&gt;
+&lt;li&gt;共享锁（S锁，MyISAM 叫做读锁）&lt;/li&gt;
+&lt;li&gt;排他锁（X锁，MyISAM 叫做写锁）&lt;/li&gt;
+&lt;li&gt;间隙锁（NEXT-KEY锁）&lt;/li&gt;
+&lt;li&gt;悲观锁（抽象性，不真实存在这个锁）&lt;/li&gt;
+&lt;li&gt;乐观锁（抽象性，不真实存在这个锁）&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="共享锁" scheme="https://www.wukong918.cn/tags/%E5%85%B1%E4%BA%AB%E9%94%81/"/>
+    
+      <category term="排他锁" scheme="https://www.wukong918.cn/tags/%E6%8E%92%E4%BB%96%E9%94%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Transactional事务隔离级别和传播性</title>
+    <link href="https://www.wukong918.cn/@Transactional%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%92%8C%E4%BC%A0%E6%92%AD%E6%80%A7.html"/>
+    <id>https://www.wukong918.cn/@Transactional%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%92%8C%E4%BC%A0%E6%92%AD%E6%80%A7.html</id>
+    <published>2020-07-06T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.057Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Transactional注解&quot;&gt;&lt;a href=&quot;#Transactional注解&quot; class=&quot;headerlink&quot; title=&quot;@Transactional注解&quot;&gt;&lt;/a&gt;@Transactional注解&lt;/h1&gt;&lt;h2 id=&quot;隔离级别&quot;&gt;&lt;a href=&quot;#隔离级别&quot; class=&quot;headerlink&quot; title=&quot;隔离级别&quot;&gt;&lt;/a&gt;隔离级别&lt;/h2&gt;&lt;p&gt;定义一个事务受其他并发事务影响程度。事务并发引发的问题。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;脏读：一个事务读取到另一个事务修改但还未提交的数据&lt;/li&gt;
+&lt;li&gt;不可重复读：一个事务读取数据之后，该数据被其他事务修改，此时第一个事务读取到的事务就是错误的（强调修改）&lt;/li&gt;
+&lt;li&gt;幻读：一个事务读取了某些数据，没提交再读取时数据多了或者少了，类似幻觉（强调增删）&lt;/li&gt;
+&lt;li&gt;丢失修改：两个事务都读取了数据，其中一个事务修改之后，另一个事务也做了修改，前者的修改丢失。
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="事务隔离级别" scheme="https://www.wukong918.cn/tags/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/"/>
+    
+      <category term="事务传播性" scheme="https://www.wukong918.cn/tags/%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E6%80%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql中MVCC原理</title>
+    <link href="https://www.wukong918.cn/Mysql%E4%B8%ADMVCC%E5%8E%9F%E7%90%86.html"/>
+    <id>https://www.wukong918.cn/Mysql%E4%B8%ADMVCC%E5%8E%9F%E7%90%86.html</id>
+    <published>2020-07-06T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.058Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Mysql中MVCC原理&quot;&gt;&lt;a href=&quot;#Mysql中MVCC原理&quot; class=&quot;headerlink&quot; title=&quot;Mysql中MVCC原理&quot;&gt;&lt;/a&gt;Mysql中MVCC原理&lt;/h1&gt;&lt;h2 id=&quot;什么是MVCC&quot;&gt;&lt;a href=&quot;#什么是MVCC&quot; class=&quot;headerlink&quot; title=&quot;什么是MVCC?&quot;&gt;&lt;/a&gt;什么是MVCC?&lt;/h2&gt;&lt;p&gt;英文全称为Multi-Version Concurrency Control,翻译为中文即 多版本并发控制。他无非就是乐观锁的一种实现方式。在Java编程中，如果把乐观锁看成一个接口，MVCC便是这个接口的一个实现类而已。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="MVCC" scheme="https://www.wukong918.cn/tags/MVCC/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>听说你不想只搬砖？——Mysql中查询缓存优化</title>
+    <link href="https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%AD%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98%E4%BC%98%E5%8C%96.html"/>
+    <id>https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%AD%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98%E4%BC%98%E5%8C%96.html</id>
+    <published>2020-06-15T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.060Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Mysql中查询缓存优化&quot;&gt;&lt;a href=&quot;#Mysql中查询缓存优化&quot; class=&quot;headerlink&quot; title=&quot;Mysql中查询缓存优化&quot;&gt;&lt;/a&gt;Mysql中查询缓存优化&lt;/h1&gt;&lt;p&gt;在实际的业务环境中，我们可能会存在重复查询相同sql的数据，其实这样每次都用Mysql走文件或索引查询数据的效率是非常的慢的，所以我们需要引入Mysql中的查询缓存。当数据被修改，之前的缓存会失效，修改比较频繁的表不适合做查询缓存。&lt;/p&gt;
+&lt;p&gt;当然使用 mysql 缓存也不是没有坏处，mysql 多了个管理缓存的任务，需要写入缓存，然后如果判断里面的缓存已经过期，又要从里面删除缓存。&lt;/p&gt;
+&lt;p&gt;&lt;font color=&#39;red&#39;&gt;博主在学习的时候发现Mysql8已经废弃了这个功能，大家学习的时候可以当作了解。&lt;/font&gt;因为现在的缓存工具很多，比如redis、memcache这些内存型缓存。&lt;/p&gt;
+&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;mysql&amp;gt; show variables like &#39;have_query_cache&#39;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;------------------+-------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Variable_name    | Value |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;------------------+-------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| have_query_cache | NO    |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;------------------+-------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;1 row in &lt;span class=&quot;keyword&quot;&gt;set&lt;/span&gt; (&lt;span class=&quot;number&quot;&gt;0.00&lt;/span&gt; sec)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;操作流程&quot;&gt;&lt;a href=&quot;#操作流程&quot; class=&quot;headerlink&quot; title=&quot;操作流程&quot;&gt;&lt;/a&gt;操作流程&lt;/h2&gt;&lt;p&gt;&lt;img data-src=&quot;https://oss-wukong.oss-cn-chengdu.aliyuncs.com/img/20200616211623.jpg&quot; alt=&quot;Mysql查询sql流程&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="sql优化" scheme="https://www.wukong918.cn/tags/sql%E4%BC%98%E5%8C%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>听说你不想只搬砖？——Mysql中索引相关和SQL优化</title>
+    <link href="https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%AD%E7%B4%A2%E5%BC%95%E7%9B%B8%E5%85%B3%E5%92%8CSQL%E4%BC%98%E5%8C%96.html"/>
+    <id>https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%AD%E7%B4%A2%E5%BC%95%E7%9B%B8%E5%85%B3%E5%92%8CSQL%E4%BC%98%E5%8C%96.html</id>
+    <published>2020-06-06T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.061Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;索引相关&quot;&gt;&lt;a href=&quot;#索引相关&quot; class=&quot;headerlink&quot; title=&quot;索引相关&quot;&gt;&lt;/a&gt;索引相关&lt;/h1&gt;&lt;p&gt;索引是数据库优化最常用的手段之一，通过索引通常可以帮助用户解决大多数的MySQL性能优化问题。&lt;/p&gt;
+&lt;p&gt;以下的所有操作都只是抛砖引玉的作用，很多场景都是讲的大多数场景不是绝对的场景，具体场景还是需要具体分析，因为Mysql查询机制很优秀会选择“最优执行计划”也和索引的数据结构有关，请读者按着文章实际操作一次，才能更加贴切的了解到索引相关操作的奥秘，光学不写如竹篮打水。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="sql优化" scheme="https://www.wukong918.cn/tags/sql%E4%BC%98%E5%8C%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>听说你不想只搬砖？——Mysql中sql优化步骤</title>
+    <link href="https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%ADsql%E4%BC%98%E5%8C%96%E6%AD%A5%E9%AA%A4.html"/>
+    <id>https://www.wukong918.cn/%E5%90%AC%E8%AF%B4%E4%BD%A0%E4%B8%8D%E6%83%B3%E5%8F%AA%E6%90%AC%E7%A0%96%EF%BC%9F%E2%80%94%E2%80%94Mysql%E4%B8%ADsql%E4%BC%98%E5%8C%96%E6%AD%A5%E9%AA%A4.html</id>
+    <published>2020-06-02T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.060Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;优化SQL步骤&quot;&gt;&lt;a href=&quot;#优化SQL步骤&quot; class=&quot;headerlink&quot; title=&quot;优化SQL步骤&quot;&gt;&lt;/a&gt;优化SQL步骤&lt;/h1&gt;&lt;p&gt;听说你不想在工作中只做一些简单的CRUD的工作了。&lt;/p&gt;
+&lt;p&gt;那么作为极客的你，一定得知道这些优化SQL的步骤，才能在大数据级表查询中不用注释掉Thread.sleep(10000);就能让你的程序优化杠杠的。&lt;/p&gt;
+&lt;h2 id=&quot;查看SQL执行频率&quot;&gt;&lt;a href=&quot;#查看SQL执行频率&quot; class=&quot;headerlink&quot; title=&quot;查看SQL执行频率&quot;&gt;&lt;/a&gt;查看SQL执行频率&lt;/h2&gt;&lt;h3 id=&quot;查看当前连接的信息&quot;&gt;&lt;a href=&quot;#查看当前连接的信息&quot; class=&quot;headerlink&quot; title=&quot;查看当前连接的信息&quot;&gt;&lt;/a&gt;查看当前连接的信息&lt;/h3&gt; &lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 查看SQL执行频率 7个_占位 查询的是当前连接的信息 此处代表命令执行操作次数&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;show&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;status&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;like&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Com_______&#39;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# 以下是查询出的信息&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;---------------+-------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Variable_name | Value |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;---------------+-------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_binlog    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_commit    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_delete    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_import    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_insert    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_repair    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_revoke    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_select    | 1     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_signal    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_update    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_xa_end    | 0     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;---------------+-------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11 rows in &lt;span class=&quot;keyword&quot;&gt;set&lt;/span&gt; (&lt;span class=&quot;number&quot;&gt;0.00&lt;/span&gt; sec)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;查看全局的连接信息&quot;&gt;&lt;a href=&quot;#查看全局的连接信息&quot; class=&quot;headerlink&quot; title=&quot;查看全局的连接信息&quot;&gt;&lt;/a&gt;查看全局的连接信息&lt;/h3&gt;&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;### 查看全局的SQL执行频率 此处代表命令执行操作次数&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;show&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;global&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;status&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;like&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Com_______&#39;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;### 以下是查询出的信息&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;---------------+--------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Variable_name | Value  |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;---------------+--------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_binlog    | 0      |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_commit    | 3515   |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_delete    | 95     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_import    | 0      |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_insert    | 18088  |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_repair    | 0      |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_revoke    | 0      |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_select    | 101830 |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_signal    | 0      |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_update    | 21820  |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Com_xa_end    | 0      |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;---------------+--------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11 rows in &lt;span class=&quot;keyword&quot;&gt;set&lt;/span&gt; (&lt;span class=&quot;number&quot;&gt;0.01&lt;/span&gt; sec)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;查看InnoDB表的SQL执行频率&quot;&gt;&lt;a href=&quot;#查看InnoDB表的SQL执行频率&quot; class=&quot;headerlink&quot; title=&quot;查看InnoDB表的SQL执行频率&quot;&gt;&lt;/a&gt;查看InnoDB表的SQL执行频率&lt;/h3&gt;&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;#查看InnoDB表的SQL执行频率 此处的value代表影响的行数&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;show&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;global&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;status&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;like&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;Innodb_rows_%&#39;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;### 以下是返回信息&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;----------------------+----------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Variable_name        | Value    |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;----------------------+----------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Innodb_rows_deleted  | 865      |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Innodb_rows_inserted | 3287391  |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Innodb_rows_read     | 37754591 |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;| Innodb_rows_updated  | 7009     |&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;+&lt;span class=&quot;comment&quot;&gt;----------------------+----------+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4 rows in &lt;span class=&quot;keyword&quot;&gt;set&lt;/span&gt; (&lt;span class=&quot;number&quot;&gt;0.01&lt;/span&gt; sec)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;show-status字段详解&quot;&gt;&lt;a href=&quot;#show-status字段详解&quot; class=&quot;headerlink&quot; title=&quot;show status字段详解&quot;&gt;&lt;/a&gt;show status字段详解&lt;/h3&gt;&lt;p&gt;具体的Variable_name字段各种值代码的意义推荐阅读&lt;a href=&quot;https://blog.csdn.net/zhaowenbo168/article/details/53199585&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;&lt;font color=&quot;0099ff&quot;&gt;MySQL运行状态show status详解&lt;/font&gt;&lt;/a&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="sql优化" scheme="https://www.wukong918.cn/tags/sql%E4%BC%98%E5%8C%96/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql存储引擎</title>
+    <link href="https://www.wukong918.cn/Mysql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E.html"/>
+    <id>https://www.wukong918.cn/Mysql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E.html</id>
+    <published>2020-06-01T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.059Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;存储引擎概述&quot;&gt;&lt;a href=&quot;#存储引擎概述&quot; class=&quot;headerlink&quot; title=&quot;存储引擎概述&quot;&gt;&lt;/a&gt;存储引擎概述&lt;/h1&gt;&lt;p&gt;和大多数的数据库不同，MySQL中有一个存储引擎的概念，针对不同的存储需求可以选择最优的存储引擎。&lt;/p&gt;
+&lt;p&gt;存储引擎就是存储数据，建立索引，更新查询数据等等技术的实现方式。存储引擎是基于表的，而不是基于库的。所以存储引擎也可被称为表类型。&lt;/p&gt;
+&lt;p&gt;Oracle，SqlServer等数据库只有一种存储引擎。MySQL提供了插件式的存储引擎架构。所以MySQL存在多种存储引擎，可以根据需要使用相应的引擎，或者编写存储引擎。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="存储引擎" scheme="https://www.wukong918.cn/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql索引</title>
+    <link href="https://www.wukong918.cn/Mysql%E7%B4%A2%E5%BC%95.html"/>
+    <id>https://www.wukong918.cn/Mysql%E7%B4%A2%E5%BC%95.html</id>
+    <published>2020-05-30T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.059Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;索引概述&quot;&gt;&lt;a href=&quot;#索引概述&quot; class=&quot;headerlink&quot; title=&quot;索引概述&quot;&gt;&lt;/a&gt;索引概述&lt;/h1&gt;&lt;p&gt;MySQL官方堆索引的定义为：索引（index）是帮助&lt;font color=&quot;red&quot;&gt;MySQL高效获取数据&lt;/font&gt;的&lt;font color=&quot;red&quot;&gt;数据结构&lt;/font&gt;（有序）。在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法，这种数据结构就是索引。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="索引" scheme="https://www.wukong918.cn/tags/%E7%B4%A2%E5%BC%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mysql中MyISAM和InnoDB区别</title>
+    <link href="https://www.wukong918.cn/Mysql%E4%B8%ADMyISAM%E5%92%8CInnoDB%E5%8C%BA%E5%88%AB.html"/>
+    <id>https://www.wukong918.cn/Mysql%E4%B8%ADMyISAM%E5%92%8CInnoDB%E5%8C%BA%E5%88%AB.html</id>
+    <published>2020-05-28T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.058Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;MyISAM&quot;&gt;&lt;a href=&quot;#MyISAM&quot; class=&quot;headerlink&quot; title=&quot;MyISAM&quot;&gt;&lt;/a&gt;&lt;strong&gt;MyISAM&lt;/strong&gt;&lt;/h1&gt;&lt;p&gt;MyISAM是MySQL的默认数据库引擎（5.5版之前），由早期的ISAM（Indexed Sequential Access Method：有索引的顺序访问方法）所改良。虽然性能极佳，但却有一个缺点：不支持事务处理（transaction）。不过，在这几年的发展下，MySQL也导入了InnoDB（另一种数据库引擎），以强化参考完整性与并发违规处理机制，后来就逐渐取代MyISAM。&lt;/p&gt;
+&lt;h1 id=&quot;InnoDB&quot;&gt;&lt;a href=&quot;#InnoDB&quot; class=&quot;headerlink&quot; title=&quot;InnoDB&quot;&gt;&lt;/a&gt;&lt;strong&gt;InnoDB&lt;/strong&gt;&lt;/h1&gt;&lt;p&gt;InnoDB，是MySQL的数据库引擎之一，为MySQL AB发布binary的标准之一。InnoDB由Innobase Oy公司所开发，2006年五月时由甲骨文公司并购。与传统的ISAM与MyISAM相比，InnoDB的最大特色就是支持了ACID兼容的事务（Transaction）功能，类似于PostgreSQL。目前InnoDB采用双轨制授权，一是GPL授权，另一是专有软件授权。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/categories/Mysql/"/>
+    
+    
+      <category term="Mysql" scheme="https://www.wukong918.cn/tags/Mysql/"/>
+    
+      <category term="存储引擎" scheme="https://www.wukong918.cn/tags/%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/"/>
+    
+      <category term="MyISAM" scheme="https://www.wukong918.cn/tags/MyISAM/"/>
+    
+      <category term="InnoDB" scheme="https://www.wukong918.cn/tags/InnoDB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>直击HashMap源码</title>
+    <link href="https://www.wukong918.cn/%E7%9B%B4%E5%87%BBHashMap%E6%BA%90%E7%A0%81.html"/>
+    <id>https://www.wukong918.cn/%E7%9B%B4%E5%87%BBHashMap%E6%BA%90%E7%A0%81.html</id>
+    <published>2020-05-20T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.062Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;HashMap源码分析&quot;&gt;&lt;a href=&quot;#HashMap源码分析&quot; class=&quot;headerlink&quot; title=&quot;HashMap源码分析&quot;&gt;&lt;/a&gt;HashMap源码分析&lt;/h1&gt;&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;我们在开发当中常常会用到HashMap这个对象，去存储key-value的数据，但是大多数时候我们都没去细细分析HashMap的源码。&lt;/p&gt;
+&lt;p&gt;今天我就来跟着HashMap源码来分析HashMap是如何实现存储，扩容，以及性能优化的。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Java直击源码系列" scheme="https://www.wukong918.cn/categories/Java%E7%9B%B4%E5%87%BB%E6%BA%90%E7%A0%81%E7%B3%BB%E5%88%97/"/>
+    
+    
+      <category term="Java" scheme="https://www.wukong918.cn/tags/Java/"/>
+    
+      <category term="HashMap" scheme="https://www.wukong918.cn/tags/HashMap/"/>
+    
+      <category term="源码" scheme="https://www.wukong918.cn/tags/%E6%BA%90%E7%A0%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JVM与JAVA体系</title>
+    <link href="https://www.wukong918.cn/JVM%E4%B8%8EJAVA%E4%BD%93%E7%B3%BB.html"/>
+    <id>https://www.wukong918.cn/JVM%E4%B8%8EJAVA%E4%BD%93%E7%B3%BB.html</id>
+    <published>2020-05-04T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.058Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;重点&quot;&gt;&lt;a href=&quot;#重点&quot; class=&quot;headerlink&quot; title=&quot;重点&quot;&gt;&lt;/a&gt;&lt;font color=red&gt;重点&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;只要符合JVM规范的字节码&lt;br&gt;都能在JVM上运行 不管是什么高级语言编写的&lt;/p&gt;
+&lt;h1 id=&quot;JVM特点&quot;&gt;&lt;a href=&quot;#JVM特点&quot; class=&quot;headerlink&quot; title=&quot;JVM特点&quot;&gt;&lt;/a&gt;&lt;font color=red&gt;JVM特点&lt;/font&gt;&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;一次编译，到处运行&lt;/li&gt;
+&lt;li&gt;自动内存管理&lt;/li&gt;
+&lt;li&gt;自动垃圾回收 &lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&quot;回收机制历史&quot;&gt;&lt;a href=&quot;#回收机制历史&quot; class=&quot;headerlink&quot; title=&quot;回收机制历史&quot;&gt;&lt;/a&gt;&lt;font color=red&gt;回收机制历史&lt;/font&gt;&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;jdk7出现G1回收&lt;/li&gt;
+&lt;li&gt;jdk9将G1默认替代CMS&lt;/li&gt;
+&lt;li&gt;jdk11出现ZGC性能特别高&lt;br&gt;4 . 2019年 redhat公司发布 shenandoah GC
+    
+    </summary>
+    
+    
+      <category term="JVM" scheme="https://www.wukong918.cn/categories/JVM/"/>
+    
+    
+      <category term="Java" scheme="https://www.wukong918.cn/tags/Java/"/>
+    
+      <category term="JVM" scheme="https://www.wukong918.cn/tags/JVM/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>类加载子系统</title>
+    <link href="https://www.wukong918.cn/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F.html"/>
+    <id>https://www.wukong918.cn/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%AD%90%E7%B3%BB%E7%BB%9F.html</id>
+    <published>2020-05-03T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.062Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;工具&quot;&gt;&lt;a href=&quot;#工具&quot; class=&quot;headerlink&quot; title=&quot;工具&quot;&gt;&lt;/a&gt;工具&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;jclasslib bytecode viewer&lt;/li&gt;
+&lt;li&gt;binary viewer&lt;/br&gt;
+
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以上idea均有插件&lt;/p&gt;
+&lt;h1 id=&quot;step1-加载&quot;&gt;&lt;a href=&quot;#step1-加载&quot; class=&quot;headerlink&quot; title=&quot;step1 加载&quot;&gt;&lt;/a&gt;step1 加载&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;通过一个类的全限定名获取定义此类的二进制字节流&lt;/li&gt;
+&lt;li&gt;将这个字节流锁代表的静态存储结构转化为方法区的运行时数据结构&lt;/li&gt;
+&lt;li&gt;&lt;font color=red&gt;在内存中生成一个代表这个类的java.lang.Class对象&lt;/font&gt;,作为方法区这个类的各种数据的访问入口&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&quot;类加载器的分类&quot;&gt;&lt;a href=&quot;#类加载器的分类&quot; class=&quot;headerlink&quot; title=&quot;类加载器的分类&quot;&gt;&lt;/a&gt;类加载器的分类&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;JVM支持两种类型的类加载器，分别为&lt;font color=red&gt;引导类加载器（Bootstrap ClassLoader）&lt;/font&gt;和&lt;font color=red&gt;自定义类加载器（User-Defined ClassLoader）&lt;/font&gt;&lt;/li&gt;
+&lt;li&gt;从概念上来讲，自定义类加载器一般指的是程序中由开发人员自定义的一类加载器，但是Java虚拟机规范没有这么定义，而是&lt;font color=red&gt;将所有派生于抽象类ClassLoader的类加载器都划分为自定义类加载器&lt;/font&gt;&lt;/li&gt;
+&lt;li&gt;无论类加载器的类型如何划分，在程序中我们最常见的引导类类加载器始终只有3个
+    
+    </summary>
+    
+    
+      <category term="JVM" scheme="https://www.wukong918.cn/categories/JVM/"/>
+    
+    
+      <category term="Java" scheme="https://www.wukong918.cn/tags/Java/"/>
+    
+      <category term="JVM" scheme="https://www.wukong918.cn/tags/JVM/"/>
+    
+      <category term="ClassLoader" scheme="https://www.wukong918.cn/tags/ClassLoader/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CDN防盗链与有效使用CDN缓存</title>
+    <link href="https://www.wukong918.cn/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html"/>
+    <id>https://www.wukong918.cn/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html</id>
+    <published>2020-04-26T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.058Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;CDN防盗链&quot;&gt;&lt;a href=&quot;#CDN防盗链&quot; class=&quot;headerlink&quot; title=&quot;CDN防盗链&quot;&gt;&lt;/a&gt;CDN防盗链&lt;/h1&gt;&lt;h2 id=&quot;应用场景&quot;&gt;&lt;a href=&quot;#应用场景&quot; class=&quot;headerlink&quot; title=&quot;应用场景&quot;&gt;&lt;/a&gt;应用场景&lt;/h2&gt;&lt;p&gt;在我们搭建自己的阿里云CDN时，加快我们站点的静态文件响应速度。&lt;/p&gt;
+&lt;p&gt;但是与此同时，我们站点里的某些静态资源可能会被其他用户所盗取，然后使用我们的流量让他们的站点变得更流畅。&lt;/p&gt;
+&lt;h2 id=&quot;案例：&quot;&gt;&lt;a href=&quot;#案例：&quot; class=&quot;headerlink&quot; title=&quot;案例：&quot;&gt;&lt;/a&gt;案例：&lt;/h2&gt;&lt;p&gt;假设我们的网站为A 里面有一个静态的CDN链接&lt;/p&gt;
+&lt;p&gt;此时用户B看到我们的网站里的CDN链接并盗用了我这个链接，发布在他们自己的网站上。&lt;/p&gt;
+&lt;p&gt;此时用户看到用户B的图片的流程图&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;graph LR&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	用户 --&amp;gt; 站点B --&amp;gt; CDN链接图片&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;可以看见用户并不知道这个CDN链接是属于我的，此时站点B就是在盗用我的CDN链接，并且没有给我带来流量。使用 阿里云CDN是存在外网下行流量费用和请求费用的。&lt;/p&gt;
+&lt;p&gt;站点B这样的行为我称之为”白嫖“。&lt;/p&gt;
+&lt;p&gt;如果我们只是站在在道德层面上去指责别人，并不采取措施，我们的钱包里的钱就是为他人来带便利和流量。&lt;/p&gt;
+&lt;p&gt;所以我们需要&lt;font color=&quot;red&quot;&gt;CDN防盗链&lt;/font&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="阿里云" scheme="https://www.wukong918.cn/categories/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+    
+      <category term="阿里云" scheme="https://www.wukong918.cn/tags/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+      <category term="CDN" scheme="https://www.wukong918.cn/tags/CDN/"/>
+    
+      <category term="防盗链" scheme="https://www.wukong918.cn/tags/%E9%98%B2%E7%9B%97%E9%93%BE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>OSS防盗链</title>
+    <link href="https://www.wukong918.cn/OSS%E9%98%B2%E7%9B%97%E9%93%BE.html"/>
+    <id>https://www.wukong918.cn/OSS%E9%98%B2%E7%9B%97%E9%93%BE.html</id>
+    <published>2020-04-26T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.059Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;应用场景&quot;&gt;&lt;a href=&quot;#应用场景&quot; class=&quot;headerlink&quot; title=&quot;应用场景&quot;&gt;&lt;/a&gt;应用场景&lt;/h1&gt;&lt;p&gt;在我们搭建自己的阿里云OSS时，里面存储了许多我们运用的静态文件（图片、js、css）等。&lt;/p&gt;
+&lt;h2 id=&quot;案例：&quot;&gt;&lt;a href=&quot;#案例：&quot; class=&quot;headerlink&quot; title=&quot;案例：&quot;&gt;&lt;/a&gt;案例：&lt;/h2&gt;&lt;p&gt;假设我们的网站为A 里面有了OSS的链接&lt;/p&gt;
+&lt;p&gt;此时用户B看到我们的网站里的OSS链接并盗用了我这个链接，发布在他们自己的网站上。&lt;/p&gt;
+&lt;p&gt;此时用户看到用户B的图片的流程图&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;graph LR&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	用户 --&amp;gt; 站点B --&amp;gt; OSS链接&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;可以看见用户并不知道这个OSS链接是属于我的，此时站点B就是在盗用我的OSS链接，并且没有给我带来流量。使用 阿里云OSS是存在外网下行流量费用和请求费用的。&lt;/p&gt;
+&lt;p&gt;站点B这样的行为我称之为”白嫖“。&lt;/p&gt;
+&lt;p&gt;如果我们只是站在在道德层面上去指责别人，并不采取措施，我们的钱包里的钱就是为他人来带便利和流量。&lt;/p&gt;
+&lt;p&gt;所以我们需要&lt;font color=&quot;red&quot;&gt;OSS防盗链&lt;/font&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="阿里云" scheme="https://www.wukong918.cn/categories/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+    
+      <category term="阿里云" scheme="https://www.wukong918.cn/tags/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+      <category term="防盗链" scheme="https://www.wukong918.cn/tags/%E9%98%B2%E7%9B%97%E9%93%BE/"/>
+    
+      <category term="OSS" scheme="https://www.wukong918.cn/tags/OSS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>运用浏览器缓存减少CDN请求</title>
+    <link href="https://www.wukong918.cn/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html"/>
+    <id>https://www.wukong918.cn/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html</id>
+    <published>2020-04-26T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.063Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;CDN将静态文件存储在浏览器&quot;&gt;&lt;a href=&quot;#CDN将静态文件存储在浏览器&quot; class=&quot;headerlink&quot; title=&quot;CDN将静态文件存储在浏览器&quot;&gt;&lt;/a&gt;CDN将静态文件存储在浏览器&lt;/h1&gt;&lt;h2 id=&quot;应用场景&quot;&gt;&lt;a href=&quot;#应用场景&quot; class=&quot;headerlink&quot; title=&quot;应用场景&quot;&gt;&lt;/a&gt;应用场景&lt;/h2&gt;&lt;p&gt;当我们配置好自己的CDN缓存后，我们还会发现每次都会发起请求CDN，这样对于“勤俭节约”的我来说是十分浪费，且用户也会感觉页面加载速度会稍微有丢丢慢。&lt;/p&gt;
+&lt;p&gt;该如何去解决呢？&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="阿里云" scheme="https://www.wukong918.cn/categories/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+    
+      <category term="阿里云" scheme="https://www.wukong918.cn/tags/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+      <category term="CDN" scheme="https://www.wukong918.cn/tags/CDN/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hexo的Next主题如何添加动态背景</title>
+    <link href="https://www.wukong918.cn/Hexo%E7%9A%84Next%E4%B8%BB%E9%A2%98%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E5%8A%A8%E6%80%81%E8%83%8C%E6%99%AF.html"/>
+    <id>https://www.wukong918.cn/Hexo%E7%9A%84Next%E4%B8%BB%E9%A2%98%E5%A6%82%E4%BD%95%E6%B7%BB%E5%8A%A0%E5%8A%A8%E6%80%81%E8%83%8C%E6%99%AF.html</id>
+    <published>2020-04-22T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.058Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;修改-layout-swig&quot;&gt;&lt;a href=&quot;#修改-layout-swig&quot; class=&quot;headerlink&quot; title=&quot;修改_layout.swig&quot;&gt;&lt;/a&gt;修改_layout.swig&lt;/h2&gt;&lt;p&gt;打开博客根目录下&lt;code&gt;themes/next/layout/_layout.swig&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;在&lt;code&gt;&amp;lt;/body&amp;gt;&lt;/code&gt;之前添加代码&lt;/p&gt;
+&lt;p&gt;（理论上来说js标签放在html文档的任何位置都可以，规范起见，推荐放到body结束标签的末尾，包含到body标签内：这样处理的好处是无需担心因页面未完成加载，造成DOM节点获取不到，使脚本报错的问题，而且能避免因脚本运行缓慢造成页面卡死的问题。另外，Yahoo的前端优化指南里就有这一条。）&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#123;% &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; theme.canvas_nest %&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;lt;script type=&lt;span class=&quot;string&quot;&gt;&quot;text/javascript&quot;&lt;/span&gt; src=&lt;span class=&quot;string&quot;&gt;&quot;//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js&quot;&lt;/span&gt;&amp;gt;&amp;lt;&lt;span class=&quot;regexp&quot;&gt;/script&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;regexp&quot;&gt;&amp;#123;% endif %&amp;#125;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;注意这里引用的CDN文件&lt;font color=&quot;red&quot;&gt;建议下载到本地然后引用&lt;/font&gt;这样的好处是如果某天这个CDN链接404了，我们还能运用&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Hexo" scheme="https://www.wukong918.cn/categories/Hexo/"/>
+    
+    
+      <category term="Hexo" scheme="https://www.wukong918.cn/tags/Hexo/"/>
+    
+      <category term="Next" scheme="https://www.wukong918.cn/tags/Next/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hexo+Next主题 文章添加阅读次数，访问量等</title>
+    <link href="https://www.wukong918.cn/Hexo+Next%E4%B8%BB%E9%A2%98%20%E6%96%87%E7%AB%A0%E6%B7%BB%E5%8A%A0%E9%98%85%E8%AF%BB%E6%AC%A1%E6%95%B0%EF%BC%8C%E8%AE%BF%E9%97%AE%E9%87%8F%E7%AD%89.html"/>
+    <id>https://www.wukong918.cn/Hexo+Next%E4%B8%BB%E9%A2%98%20%E6%96%87%E7%AB%A0%E6%B7%BB%E5%8A%A0%E9%98%85%E8%AF%BB%E6%AC%A1%E6%95%B0%EF%BC%8C%E8%AE%BF%E9%97%AE%E9%87%8F%E7%AD%89.html</id>
+    <published>2020-04-21T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.058Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;修改博客配置文件，添加以下代码&quot;&gt;&lt;a href=&quot;#修改博客配置文件，添加以下代码&quot; class=&quot;headerlink&quot; title=&quot;修改博客配置文件，添加以下代码&quot;&gt;&lt;/a&gt;修改博客配置文件，添加以下代码&lt;/h1&gt;&lt;figure
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Hexo" scheme="https://www.wukong918.cn/categories/Hexo/"/>
+    
+    
+  </entry>
+  
+</feed>
