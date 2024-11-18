@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.wukong918.cn/"/>
-  <updated>2024-11-17T11:39:54.116Z</updated>
+  <updated>2024-11-18T05:19:06.679Z</updated>
   <id>https://www.wukong918.cn/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://www.wukong918.cn/jvm/%E6%95%88%E7%8E%87%E5%AD%A6%E4%BC%9AJVM.html"/>
     <id>https://www.wukong918.cn/jvm/%E6%95%88%E7%8E%87%E5%AD%A6%E4%BC%9AJVM.html</id>
     <published>2024-11-15T16:00:00.000Z</published>
-    <updated>2024-11-17T11:39:54.116Z</updated>
+    <updated>2024-11-18T05:19:06.679Z</updated>
     
     <summary type="html">
     
@@ -486,6 +486,30 @@
   </entry>
   
   <entry>
+    <title>运用浏览器缓存减少CDN请求</title>
+    <link href="https://www.wukong918.cn/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html"/>
+    <id>https://www.wukong918.cn/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html</id>
+    <published>2020-04-26T16:00:00.000Z</published>
+    <updated>2024-11-16T06:16:52.063Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;CDN将静态文件存储在浏览器&quot;&gt;&lt;a href=&quot;#CDN将静态文件存储在浏览器&quot; class=&quot;headerlink&quot; title=&quot;CDN将静态文件存储在浏览器&quot;&gt;&lt;/a&gt;CDN将静态文件存储在浏览器&lt;/h1&gt;&lt;h2 id=&quot;应用场景&quot;&gt;&lt;a href=&quot;#应用场景&quot; class=&quot;headerlink&quot; title=&quot;应用场景&quot;&gt;&lt;/a&gt;应用场景&lt;/h2&gt;&lt;p&gt;当我们配置好自己的CDN缓存后，我们还会发现每次都会发起请求CDN，这样对于“勤俭节约”的我来说是十分浪费，且用户也会感觉页面加载速度会稍微有丢丢慢。&lt;/p&gt;
+&lt;p&gt;该如何去解决呢？&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="阿里云" scheme="https://www.wukong918.cn/categories/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+    
+      <category term="阿里云" scheme="https://www.wukong918.cn/tags/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
+    
+      <category term="CDN" scheme="https://www.wukong918.cn/tags/CDN/"/>
+    
+  </entry>
+  
+  <entry>
     <title>CDN防盗链与有效使用CDN缓存</title>
     <link href="https://www.wukong918.cn/other/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html"/>
     <id>https://www.wukong918.cn/other/CDN%E9%98%B2%E7%9B%97%E9%93%BE%E4%B8%8E%E6%9C%89%E6%95%88%E4%BD%BF%E7%94%A8CDN%E7%BC%93%E5%AD%98.html</id>
@@ -551,30 +575,6 @@
       <category term="防盗链" scheme="https://www.wukong918.cn/tags/%E9%98%B2%E7%9B%97%E9%93%BE/"/>
     
       <category term="OSS" scheme="https://www.wukong918.cn/tags/OSS/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>运用浏览器缓存减少CDN请求</title>
-    <link href="https://www.wukong918.cn/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html"/>
-    <id>https://www.wukong918.cn/other/%E8%BF%90%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E5%87%8F%E5%B0%91CDN%E8%AF%B7%E6%B1%82.html</id>
-    <published>2020-04-26T16:00:00.000Z</published>
-    <updated>2024-11-16T06:16:52.063Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;CDN将静态文件存储在浏览器&quot;&gt;&lt;a href=&quot;#CDN将静态文件存储在浏览器&quot; class=&quot;headerlink&quot; title=&quot;CDN将静态文件存储在浏览器&quot;&gt;&lt;/a&gt;CDN将静态文件存储在浏览器&lt;/h1&gt;&lt;h2 id=&quot;应用场景&quot;&gt;&lt;a href=&quot;#应用场景&quot; class=&quot;headerlink&quot; title=&quot;应用场景&quot;&gt;&lt;/a&gt;应用场景&lt;/h2&gt;&lt;p&gt;当我们配置好自己的CDN缓存后，我们还会发现每次都会发起请求CDN，这样对于“勤俭节约”的我来说是十分浪费，且用户也会感觉页面加载速度会稍微有丢丢慢。&lt;/p&gt;
-&lt;p&gt;该如何去解决呢？&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="阿里云" scheme="https://www.wukong918.cn/categories/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
-    
-    
-      <category term="阿里云" scheme="https://www.wukong918.cn/tags/%E9%98%BF%E9%87%8C%E4%BA%91/"/>
-    
-      <category term="CDN" scheme="https://www.wukong918.cn/tags/CDN/"/>
     
   </entry>
   
